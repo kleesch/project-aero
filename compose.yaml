@@ -1,0 +1,4 @@
+# Shim so a plain `docker compose up` from the repository root works.
+# The actual service definitions live in infra/docker-compose.yml.
+include:
+  - infra/docker-compose.yml

@@ -6,28 +6,28 @@ This document is the authoritative technical design for the USA Project: a web p
 
 These were open questions in the spec, resolved during design review (2026-07-07):
 
-| Question | Decision |
-|---|---|
-| How do bill stages advance? | **Manually.** A vote-update claim holder explicitly marks a stage passed/failed; recorded tallies are supporting documentation, not the trigger. The platform does not encode quorum/threshold rules. |
-| Bills pending at session rollover? | **They die.** Any bill not enacted when the Congress advances gets a terminal `DIED_IN_SESSION` status. |
-| External API authentication? | **API keys.** Admin-issued, per consuming service, revocable, rate-limited. |
-| Who creates business registrations? | **Claim-gated.** A `business:register` claim holder creates the entry and assigns the owner. |
-| Who expunges / pardons? | **Expunge: judge claim. Pardon: presidential claim.** |
-| Database? | **PostgreSQL**, locked in. Cloud-hosted (Neon or Supabase free tier) in production, Docker container locally. |
-| Deployment target? | **Undecided, kept portable.** Generic Docker Compose that runs on any container host or VPS; no provider-specific config in the initial build. |
-| Vote attribution granularity? | **Per-member at every voting stage** (committee, both floors, veto override), drawing from the chamber rosters. Positions: yea / nay / abstain / absent. |
+| Question                            | Decision                                                                                                                                                                                              |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| How do bill stages advance?         | **Manually.** A vote-update claim holder explicitly marks a stage passed/failed; recorded tallies are supporting documentation, not the trigger. The platform does not encode quorum/threshold rules. |
+| Bills pending at session rollover?  | **They die.** Any bill not enacted when the Congress advances gets a terminal `DIED_IN_SESSION` status.                                                                                               |
+| External API authentication?        | **API keys.** Admin-issued, per consuming service, revocable, rate-limited.                                                                                                                           |
+| Who creates business registrations? | **Claim-gated.** A `business:register` claim holder creates the entry and assigns the owner.                                                                                                          |
+| Who expunges / pardons?             | **Expunge: judge claim. Pardon: presidential claim.**                                                                                                                                                 |
+| Database?                           | **PostgreSQL**, locked in. Cloud-hosted (Neon or Supabase free tier) in production, Docker container locally.                                                                                         |
+| Deployment target?                  | **Undecided, kept portable.** Generic Docker Compose that runs on any container host or VPS; no provider-specific config in the initial build.                                                        |
+| Vote attribution granularity?       | **Per-member at every voting stage** (committee, both floors, veto override), drawing from the chamber rosters. Positions: yea / nay / abstain / absent.                                              |
 
 ## Stack Summary
 
-| Layer | Choice | Notes |
-|---|---|---|
-| Frontend | Vue 3 + Vuetify 3 | SPA, Vite-built. TanStack Query (`@tanstack/vue-query`) for API calls and caching. |
-| Backend | Node.js + Express 5 | TypeScript throughout. |
-| Database | PostgreSQL 16+ | Drizzle ORM + drizzle-kit migrations (TypeScript-first, SQL-transparent, readable by maintainers). |
-| File storage | Cloudflare R2 | S3-compatible API. PDFs served from a **separate origin** — see [PDF Safety](#pdf-storage--safety). |
-| Auth | ROBLOX OAuth 2.0 | Authorization Code + PKCE. Server-side sessions in Postgres, httpOnly cookie. |
-| Deployment | Docker / Docker Compose | Portable across providers; local dev uses the same compose file with a Postgres container and MinIO standing in for R2. |
-| Language/tooling | TypeScript strict, ESLint (flat config) + Prettier, Vitest | Shared lint config across all workspaces. |
+| Layer            | Choice                                                     | Notes                                                                                                                   |
+| ---------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Frontend         | Vue 3 + Vuetify 3                                          | SPA, Vite-built. TanStack Query (`@tanstack/vue-query`) for API calls and caching.                                      |
+| Backend          | Node.js + Express 5                                        | TypeScript throughout.                                                                                                  |
+| Database         | PostgreSQL 16+                                             | Drizzle ORM + drizzle-kit migrations (TypeScript-first, SQL-transparent, readable by maintainers).                      |
+| File storage     | Cloudflare R2                                              | S3-compatible API. PDFs served from a **separate origin** — see [PDF Safety](#pdf-storage--safety).                     |
+| Auth             | ROBLOX OAuth 2.0                                           | Authorization Code + PKCE. Server-side sessions in Postgres, httpOnly cookie.                                           |
+| Deployment       | Docker / Docker Compose                                    | Portable across providers; local dev uses the same compose file with a Postgres container and MinIO standing in for R2. |
+| Language/tooling | TypeScript strict, ESLint (flat config) + Prettier, Vitest | Shared lint config across all workspaces.                                                                               |
 
 ## Monorepo Layout
 
@@ -45,7 +45,7 @@ npm workspaces (no extra tooling beyond Node itself):
 ├── infra/
 │   ├── docker-compose.yml            # local: api, web, postgres, minio
 │   ├── docker-compose.prod.yml       # deployed: api, web (or combined)
-│   └── Dockerfile.*                  
+│   └── Dockerfile.*
 ├── implementation-breakdown/  # phased roadmap
 ├── DESIGN.md                  # this file
 ├── PROJECT.md                 # functional spec
@@ -141,11 +141,13 @@ Every mutation passes through an audit layer that writes to **`audit_events`**: 
 User-submitted PDFs are treated as hostile. The pipeline, shared by bills and judgments via `documents`:
 
 **Upload (through the API, never direct-to-bucket from the browser):**
+
 1. Authenticated + claim-checked multipart upload, hard size cap (20 MB).
 2. Server validates the `%PDF-` magic bytes and content type; rejects anything else. (This is a sanity gate, not a malware scan — serving-side isolation is the real defense.)
 3. Object stored in R2 under a random UUID key. User-supplied filenames are stored as display metadata only and sanitized before ever appearing in a header.
 
 **Serving (the load-bearing defenses):**
+
 1. PDFs are served from a **dedicated separate origin** (e.g. `files.example.gov-rp.com` vs. the app at `app.example.gov-rp.com`) — same-origin isolation means script execution inside a PDF viewer context can never touch the app's session or DOM.
 2. The file origin is a thin streaming proxy (a separate Express entry point in `apps/api`, bound to its own hostname/port) that fetches from R2 and sets on every response:
    - `Content-Security-Policy: sandbox` (no scripts, no top-level navigation, opaque origin)
@@ -165,7 +167,7 @@ Read-only endpoints for other group services under `/api/public/v1/`:
 - `GET /businesses/{id}` — registration + license status.
 - `GET /bills/{displayId}` — bill status, stage history, votes.
 
-Auth: `Authorization: Bearer <api key>`; keys are admin-issued (`apikey:manage`), stored hashed, revocable, rate-limited per key tier. Responses only ever contain data that is public in the web UI — API keys gate *access and rate*, not *extra visibility*. Versioned under `/v1/` so consumers survive changes.
+Auth: `Authorization: Bearer <api key>`; keys are admin-issued (`apikey:manage`), stored hashed, revocable, rate-limited per key tier. Responses only ever contain data that is public in the web UI — API keys gate _access and rate_, not _extra visibility_. Versioned under `/v1/` so consumers survive changes.
 
 Citizenship is explicitly **not** served here; consumers (and this platform, when it needs a citizenship date) query `https://osfusa.azurewebsites.net/api/immigration/{robloxId}/latest` directly.
 
@@ -173,12 +175,12 @@ Citizenship is explicitly **not** served here; consumers (and this platform, whe
 
 In-process schedulers (node-cron) inside `apps/api`, with per-job locking rows in Postgres so a future multi-instance deployment doesn't double-run:
 
-| Job | Schedule | Purpose |
-|---|---|---|
-| Roster refresh | Daily | Sync House/Senate rosters from the Congress group; mark departures inactive. |
-| Session rollover | Daily 00:05 ET + lazy check | Mark prior-session active bills `DIED_IN_SESSION`. |
-| Session cleanup | Hourly | Purge expired auth sessions. |
-| Group cache sweep | Hourly | Evict stale `user_group_cache` rows. |
+| Job               | Schedule                    | Purpose                                                                      |
+| ----------------- | --------------------------- | ---------------------------------------------------------------------------- |
+| Roster refresh    | Daily                       | Sync House/Senate rosters from the Congress group; mark departures inactive. |
+| Session rollover  | Daily 00:05 ET + lazy check | Mark prior-session active bills `DIED_IN_SESSION`.                           |
+| Session cleanup   | Hourly                      | Purge expired auth sessions.                                                 |
+| Group cache sweep | Hourly                      | Evict stale `user_group_cache` rows.                                         |
 
 ## Configuration & Secrets
 

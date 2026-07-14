@@ -1,0 +1,34 @@
+{
+  "name": "project-aero",
+  "version": "0.1.0",
+  "private": true,
+  "description": "USA Project — administrative and public auditing tools for a ROBLOX mock-government community",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/shared",
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run build --workspace @aero/shared && concurrently --kill-others --names shared,api,web --prefix-colors cyan,blue,green \"npm run dev --workspace @aero/shared\" \"npm run dev --workspace @aero/api\" \"npm run dev --workspace @aero/web\"",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b && npm run typecheck --workspace @aero/web",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.3",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.9.2",
+    "prettier": "^3.9.5",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.64.0"
+  }
+}

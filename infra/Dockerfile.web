@@ -1,0 +1,20 @@
+# Build context is the repository root (see infra/docker-compose.yml).
+FROM node:24-slim AS base
+WORKDIR /app
+
+# Install workspace dependencies. npm ci needs every workspace manifest to
+# resolve the full tree, even for workspaces this image does not run.
+FROM base AS deps
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json packages/shared/
+COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
+RUN npm ci
+
+FROM deps AS dev
+ENV NODE_ENV=development
+COPY . .
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--workspace", "@aero/web"]
+
+# A `prod` target (static build served by the API or nginx) is added in phase 08.

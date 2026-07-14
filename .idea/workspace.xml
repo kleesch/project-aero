@@ -4,9 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Add gitignore, workspace.xml update.">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DESIGN.md" beforeDir="false" afterPath="$PROJECT_DIR$/DESIGN.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROJECT.md" beforeDir="false" afterPath="$PROJECT_DIR$/PROJECT.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/00-roadmap-overview.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/00-roadmap-overview.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/01-foundation-and-tooling.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/01-foundation-and-tooling.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/02-auth-sessions-and-claims.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/02-auth-sessions-and-claims.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/03-audit-log-and-pdf-pipeline.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/03-audit-log-and-pdf-pipeline.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/04-bill-tracking.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/04-bill-tracking.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/05-judicial-records.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/05-judicial-records.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/06-business-registration.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/06-business-registration.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/07-public-api-and-api-keys.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/07-public-api-and-api-keys.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/08-deployment-and-operations.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/08-deployment-and-operations.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,61 +50,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="2.945175502646395" />
-      <entry key="MS500" value="6.434873511230947" />
-      <entry key="S2" value="9.9140435103026" />
-      <entry key="S5" value="11.083266031426616" />
-      <entry key="S10" value="11.526518244946406" />
-      <entry key="S30" value="11.839065374955373" />
-      <entry key="S60" value="12.101663581452051" />
-      <entry key="M2" value="17.471879393856607" />
-      <entry key="M5" value="83.18220568788786" />
-      <entry key="M10" value="251.122699310113" />
-      <entry key="M15" value="414.92123539478075" />
-      <entry key="M30" value="767.7010221014009" />
-      <entry key="H1" value="1104.012701840056" />
-      <entry key="H2" value="1345.5785461145454" />
-      <entry key="H4" value="1491.9037402034116" />
-      <entry key="D1" value="1629.5692840417491" />
-      <entry key="W1" value="1654.7549220319297" />
+      <entry key="MS100" value="1.3283784053270231" />
+      <entry key="MS500" value="2.289933120146741" />
+      <entry key="S2" value="3.7632081118073635" />
+      <entry key="S5" value="5.4167361087405785" />
+      <entry key="S10" value="6.4712860554276395" />
+      <entry key="S30" value="7.433326192451523" />
+      <entry key="S60" value="8.028447034455972" />
+      <entry key="M2" value="10.713563990673478" />
+      <entry key="M5" value="48.29478268945518" />
+      <entry key="M10" value="182.8828502751759" />
+      <entry key="M15" value="334.009237545735" />
+      <entry key="M30" value="688.5049780141378" />
+      <entry key="H1" value="1047.4288984214008" />
+      <entry key="H2" value="1313.6285247967414" />
+      <entry key="H4" value="1477.5898300713561" />
+      <entry key="D1" value="1633.4816029179067" />
+      <entry key="W1" value="1662.1613044017986" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="0.0" />
-      <entry key="S60" value="0.0" />
-      <entry key="M2" value="0.0" />
-      <entry key="M5" value="0.0" />
-      <entry key="M10" value="0.0" />
-      <entry key="M15" value="0.0" />
-      <entry key="M30" value="0.0" />
-      <entry key="H1" value="0.0" />
-      <entry key="H2" value="0.0" />
-      <entry key="H4" value="0.0" />
-      <entry key="D1" value="0.0" />
-      <entry key="W1" value="0.0" />
+      <entry key="MS100" value="3.674918816921548E-4" />
+      <entry key="MS500" value="0.20561251717811604" />
+      <entry key="S2" value="0.673383371094484" />
+      <entry key="S5" value="0.8536993583269634" />
+      <entry key="S10" value="0.9239585263024325" />
+      <entry key="S30" value="0.973981764526132" />
+      <entry key="S60" value="0.9869051446446775" />
+      <entry key="M2" value="0.9934309964183107" />
+      <entry key="M5" value="0.9973672021308064" />
+      <entry key="M10" value="0.9986827334698476" />
+      <entry key="M15" value="0.999121629401258" />
+      <entry key="M30" value="0.9995607182163861" />
+      <entry key="H1" value="0.9997803349818329" />
+      <entry key="H2" value="0.9998901614586638" />
+      <entry key="H4" value="0.9999450792211859" />
+      <entry key="D1" value="0.9999908463273927" />
+      <entry key="W1" value="0.9999986923273547" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="2.84427124211014" />
-      <entry key="MS500" value="6.364524010579136" />
-      <entry key="S2" value="9.8847380894503" />
-      <entry key="S5" value="11.069960009461255" />
-      <entry key="S10" value="11.519563503469483" />
-      <entry key="S30" value="11.836675923598891" />
-      <entry key="S60" value="12.100430810813412" />
-      <entry key="M2" value="17.47097842751805" />
-      <entry key="M5" value="83.18090150231345" />
-      <entry key="M10" value="251.12104385768924" />
-      <entry key="M15" value="414.9195112884896" />
-      <entry key="M30" value="767.699499227388" />
-      <entry key="H1" value="1104.0116244990627" />
-      <entry key="H2" value="1345.5778933906422" />
-      <entry key="H4" value="1491.90337917462" />
-      <entry key="D1" value="1629.569218420807" />
-      <entry key="W1" value="1654.754912514886" />
+      <entry key="MS100" value="1.2857943592348566" />
+      <entry key="MS500" value="2.356470513852078" />
+      <entry key="S2" value="4.209784433861159" />
+      <entry key="S5" value="6.12414635075617" />
+      <entry key="S10" value="7.308748110971862" />
+      <entry key="S30" value="8.374987642545971" />
+      <entry key="S60" value="8.998686979116679" />
+      <entry key="M2" value="11.698410093418277" />
+      <entry key="M5" value="49.28811282821394" />
+      <entry key="M10" value="183.87867282995273" />
+      <entry key="M15" value="335.00586526000484" />
+      <entry key="M30" value="689.5026186677745" />
+      <entry key="H1" value="1048.4273792263152" />
+      <entry key="H2" value="1314.627638974032" />
+      <entry key="H4" value="1478.5893481934932" />
+      <entry key="D1" value="1634.4815164187294" />
+      <entry key="W1" value="1663.1612918820153" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -104,29 +116,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/kleesch/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "/Users/kleesch/WebstormProjects/project-aero/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -142,7 +154,7 @@
       <option name="presentableId" value="Default" />
       <updated>1783430732170</updated>
       <workItem from="1783430733175" duration="8487000" />
-      <workItem from="1783992727456" duration="1384000" />
+      <workItem from="1783992727456" duration="2394000" />
     </task>
     <task id="LOCAL-00001" summary="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
       <option name="closed" value="true" />
@@ -152,7 +164,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783993445287</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Add gitignore, workspace.xml update.">
+      <option name="closed" value="true" />
+      <created>1783994183814</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1783994183814</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,6 +180,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation." />
-    <option name="LAST_COMMIT_MESSAGE" value="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation." />
+    <MESSAGE value="Add gitignore, workspace.xml update." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add gitignore, workspace.xml update." />
   </component>
 </project>

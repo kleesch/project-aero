@@ -24,17 +24,17 @@ This folder breaks the [DESIGN.md](../DESIGN.md) architecture into sequential, i
 09 Future: User Records (not scheduled)
 ```
 
-| Phase | Document | Summary | Depends on |
-|---|---|---|---|
-| 01 | [Foundation & Tooling](01-foundation-and-tooling.md) | Monorepo scaffold, TypeScript, lint, Docker Compose dev environment, Postgres + Drizzle, shared package, skeleton apps | — |
-| 02 | [Auth, Sessions & Claims](02-auth-sessions-and-claims.md) | ROBLOX OAuth login, server-side sessions, full claims system (group mappings, direct grants, negative claims, admin UI) | 01 |
-| 03 | [Audit Log & PDF Pipeline](03-audit-log-and-pdf-pipeline.md) | Append-only audit layer, document storage in R2/MinIO, separate-origin sandboxed file serving, quarantine | 02 |
-| 04 | [Bill Tracking](04-bill-tracking.md) | Bill submission, identifiers & session math, stage pipeline, per-member votes, rosters, tags, versioned PDFs | 03 |
-| 05 | [Judicial Records](05-judicial-records.md) | Ruling entry with linked parties, outcomes vocabulary, appeals, expungement & pardon | 03 |
-| 06 | [Business Registration](06-business-registration.md) | Registrar-created businesses, single-owner editing, ownership transfer, licenses | 03 |
-| 07 | [Public API & API Keys](07-public-api-and-api-keys.md) | Versioned read-only external API, hashed API keys, rate limiting | 04, 05, 06 |
-| 08 | [Deployment & Operations](08-deployment-and-operations.md) | Production compose, reverse proxy + TLS, managed Postgres + R2 wiring, backups, README deploy docs | 07 |
-| 09 | [Future: User Records](09-future-user-records.md) | Employment history, medals, citizenship passthrough — design notes only, not scheduled | — |
+| Phase | Document                                                     | Summary                                                                                                                 | Depends on |
+| ----- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ---------- |
+| 01    | [Foundation & Tooling](01-foundation-and-tooling.md)         | Monorepo scaffold, TypeScript, lint, Docker Compose dev environment, Postgres + Drizzle, shared package, skeleton apps  | —          |
+| 02    | [Auth, Sessions & Claims](02-auth-sessions-and-claims.md)    | ROBLOX OAuth login, server-side sessions, full claims system (group mappings, direct grants, negative claims, admin UI) | 01         |
+| 03    | [Audit Log & PDF Pipeline](03-audit-log-and-pdf-pipeline.md) | Append-only audit layer, document storage in R2/MinIO, separate-origin sandboxed file serving, quarantine               | 02         |
+| 04    | [Bill Tracking](04-bill-tracking.md)                         | Bill submission, identifiers & session math, stage pipeline, per-member votes, rosters, tags, versioned PDFs            | 03         |
+| 05    | [Judicial Records](05-judicial-records.md)                   | Ruling entry with linked parties, outcomes vocabulary, appeals, expungement & pardon                                    | 03         |
+| 06    | [Business Registration](06-business-registration.md)         | Registrar-created businesses, single-owner editing, ownership transfer, licenses                                        | 03         |
+| 07    | [Public API & API Keys](07-public-api-and-api-keys.md)       | Versioned read-only external API, hashed API keys, rate limiting                                                        | 04, 05, 06 |
+| 08    | [Deployment & Operations](08-deployment-and-operations.md)   | Production compose, reverse proxy + TLS, managed Postgres + R2 wiring, backups, README deploy docs                      | 07         |
+| 09    | [Future: User Records](09-future-user-records.md)            | Employment history, medals, citizenship passthrough — design notes only, not scheduled                                  | —          |
 
 ## Cross-Phase Conventions
 

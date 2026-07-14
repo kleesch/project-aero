@@ -1,0 +1,114 @@
+name: project-aero
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aero}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aero_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-aero}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Local stand-in for Cloudflare R2 (S3-compatible).
+  minio:
+    image: minio/minio
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-aero}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-aero_dev_password}
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # web console
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # One-shot job that creates the documents bucket, then exits.
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}
+      && mc mb --ignore-existing local/$${S3_BUCKET}"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-aero}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-aero_dev_password}
+      S3_BUCKET: ${S3_BUCKET:-aero-documents}
+    restart: 'no'
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+      target: dev
+    # Build the shared package first so its dist/ exists on the bind mount.
+    command: sh -c "npm run build --workspace @aero/shared && npm run dev --workspace @aero/api"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      FILE_ORIGIN_PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aero}:${POSTGRES_PASSWORD:-aero_dev_password}@postgres:5432/${POSTGRES_DB:-aero}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - '3000:3000' # application API
+      - '3001:3001' # future separate-origin PDF proxy (phase 03)
+    volumes:
+      - ..:/app
+      - api_node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+      target: dev
+    command: npm run dev --workspace @aero/web
+    environment:
+      API_PROXY_TARGET: http://api:3000
+    ports:
+      - '5173:5173'
+    volumes:
+      - ..:/app
+      - web_node_modules:/app/node_modules
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  miniodata:
+  # node_modules live in named volumes so the Linux containers never share
+  # binaries with a macOS/Windows host checkout. After changing dependencies,
+  # rebuild images and refresh these volumes: docker compose up --build --renew-anon-volumes
+  # (or docker volume rm project-aero_api_node_modules project-aero_web_node_modules).
+  api_node_modules:
+  web_node_modules:
