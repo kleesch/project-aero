@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PROJECT.md" afterDir="false" />
+    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,35 +14,47 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="6" />
+    <option name="cachedIndexableFilesCount" value="17" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "kleesch"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/kleesch/project-aero.git",
+    "accountId": "c1ddefdc-975e-4a39-ae09-6c5898518512"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0075448895286852" />
-      <entry key="MS500" value="1.5999566743079578" />
-      <entry key="S2" value="2.528107780936363" />
-      <entry key="S5" value="4.318885654434721" />
-      <entry key="S10" value="8.820506224591266" />
-      <entry key="S30" value="25.046449515231647" />
-      <entry key="S60" value="46.101988871885005" />
-      <entry key="M2" value="87.49662413110448" />
-      <entry key="M5" value="215.12435102392016" />
-      <entry key="M10" value="415.6319338654807" />
-      <entry key="M15" value="582.4058123149113" />
-      <entry key="M30" value="908.3351673531101" />
-      <entry key="H1" value="1196.8831292505317" />
-      <entry key="H2" value="1395.728300087602" />
-      <entry key="H4" value="1513.5378234004152" />
-      <entry key="D1" value="1622.8179311529314" />
-      <entry key="W1" value="1642.6599873138864" />
+      <entry key="MS100" value="2.945175502646395" />
+      <entry key="MS500" value="6.434873511230947" />
+      <entry key="S2" value="9.9140435103026" />
+      <entry key="S5" value="11.083266031426616" />
+      <entry key="S10" value="11.526518244946406" />
+      <entry key="S30" value="11.839065374955373" />
+      <entry key="S60" value="12.101663581452051" />
+      <entry key="M2" value="17.471879393856607" />
+      <entry key="M5" value="83.18220568788786" />
+      <entry key="M10" value="251.122699310113" />
+      <entry key="M15" value="414.92123539478075" />
+      <entry key="M30" value="767.7010221014009" />
+      <entry key="H1" value="1104.012701840056" />
+      <entry key="H2" value="1345.5785461145454" />
+      <entry key="H4" value="1491.9037402034116" />
+      <entry key="D1" value="1629.5692840417491" />
+      <entry key="W1" value="1654.7549220319297" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -64,57 +76,57 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9799935215400403" />
-      <entry key="MS500" value="1.5911091837683988" />
-      <entry key="S2" value="2.524621579101898" />
-      <entry key="S5" value="4.316662295487684" />
-      <entry key="S10" value="8.818297923424376" />
-      <entry key="S30" value="25.044226196514998" />
-      <entry key="S60" value="46.099852840087166" />
-      <entry key="M2" value="87.49452596667184" />
-      <entry key="M5" value="215.12219312624177" />
-      <entry key="M10" value="415.62979349452536" />
-      <entry key="M15" value="582.4037880823702" />
-      <entry key="M30" value="908.3335610643869" />
-      <entry key="H1" value="1196.8820584021494" />
-      <entry key="H2" value="1395.7276714232373" />
-      <entry key="H4" value="1513.5374812854695" />
-      <entry key="D1" value="1622.8178698225106" />
-      <entry key="W1" value="1642.659978440345" />
+      <entry key="MS100" value="2.84427124211014" />
+      <entry key="MS500" value="6.364524010579136" />
+      <entry key="S2" value="9.8847380894503" />
+      <entry key="S5" value="11.069960009461255" />
+      <entry key="S10" value="11.519563503469483" />
+      <entry key="S30" value="11.836675923598891" />
+      <entry key="S60" value="12.100430810813412" />
+      <entry key="M2" value="17.47097842751805" />
+      <entry key="M5" value="83.18090150231345" />
+      <entry key="M10" value="251.12104385768924" />
+      <entry key="M15" value="414.9195112884896" />
+      <entry key="M30" value="767.699499227388" />
+      <entry key="H1" value="1104.0116244990627" />
+      <entry key="H2" value="1345.5778933906422" />
+      <entry key="H4" value="1491.90337917462" />
+      <entry key="D1" value="1629.569218420807" />
+      <entry key="W1" value="1654.754912514886" />
     </decayedShown>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2,
-  "fromUser": false
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3GB2dq34drNXeNvSTbzMQDUVoW5" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "javascript.preferred.runtime.type.id": "node",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "/Users/kleesch/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/kleesch/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -130,10 +142,24 @@
       <option name="presentableId" value="Default" />
       <updated>1783430732170</updated>
       <workItem from="1783430733175" duration="8487000" />
+      <workItem from="1783992727456" duration="1384000" />
     </task>
+    <task id="LOCAL-00001" summary="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
+      <option name="closed" value="true" />
+      <created>1783993445287</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1783993445287</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation." />
   </component>
 </project>
