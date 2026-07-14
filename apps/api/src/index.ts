@@ -2,9 +2,11 @@ import { createApp } from './app.js';
 import { config } from './config.js';
 import { pool } from './db/client.js';
 import { runMigrations } from './db/migrate.js';
+import { startJobs } from './jobs/index.js';
 import { logger } from './logger.js';
 
 await runMigrations();
+startJobs();
 
 const server = createApp().listen(config.PORT, () => {
   logger.info({ port: config.PORT, environment: config.NODE_ENV }, 'API listening');

@@ -63,6 +63,11 @@ services:
       FILE_ORIGIN_PORT: 3001
       DATABASE_URL: postgresql://${POSTGRES_USER:-aero}:${POSTGRES_PASSWORD:-aero_dev_password}@postgres:5432/${POSTGRES_DB:-aero}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:5173}
+      ROBLOX_CLIENT_ID: ${ROBLOX_CLIENT_ID:-}
+      ROBLOX_CLIENT_SECRET: ${ROBLOX_CLIENT_SECRET:-}
+      SESSION_SECRET: ${SESSION_SECRET:-aero_dev_session_secret_do_not_use_in_prod}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
     ports:
       - '3000:3000' # application API
       - '3001:3001' # future separate-origin PDF proxy (phase 03)

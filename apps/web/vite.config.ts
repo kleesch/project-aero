@@ -14,6 +14,12 @@ export default defineConfig({
         target: process.env.API_PROXY_TARGET ?? 'http://localhost:3000',
         changeOrigin: true,
       },
+      // The whole OAuth round trip stays same-origin at the dev URL, so no
+      // CORS-with-credentials setup is needed locally.
+      '/auth': {
+        target: process.env.API_PROXY_TARGET ?? 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 });

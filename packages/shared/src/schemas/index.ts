@@ -11,4 +11,4 @@
  *   bill statuses, vote positions) rather than redeclaring literals.
  * - Everything is re-exported from this barrel file.
  */
-export {};
+export * from './claims.js';

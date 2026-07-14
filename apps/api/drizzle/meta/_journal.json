@@ -8,6 +8,20 @@
       "when": 1783994793298,
       "tag": "0000_init-users",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784054308577,
+      "tag": "0001_auth-and-claims",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784054326433,
+      "tag": "0002_seed-claims",
+      "breakpoints": true
     }
   ]
 }
