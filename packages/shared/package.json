@@ -2,7 +2,7 @@
   "name": "@aero/shared",
   "version": "0.1.0",
   "private": true,
-  "description": "Single source of truth for claim keys, bill enums, congress-session math, and shared zod schemas",
+  "description": "Single source of truth for claim keys, bill enums, congress-session math, shared zod schemas, and API wire types (UserRef, claim views)",
   "type": "module",
   "exports": {
     ".": {

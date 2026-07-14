@@ -4,23 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 1">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 2.. But all of it this time xd">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/vite.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/infra/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/infra/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/api/adminClaims.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/api/adminClaims.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/ClaimsAdminPanel.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/ClaimsAdminPanel.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/UserClaimsLookup.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/UserClaimsLookup.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/implementation-breakdown/03-audit-log-and-pdf-pipeline.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/03-audit-log-and-pdf-pipeline.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,61 +44,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.932629094442187" />
-      <entry key="MS500" value="5.806357025888916" />
-      <entry key="S2" value="11.181790140879798" />
-      <entry key="S5" value="19.109486815180766" />
-      <entry key="S10" value="27.386817343817963" />
-      <entry key="S30" value="41.385366008664626" />
-      <entry key="S60" value="50.618980540342775" />
-      <entry key="M2" value="58.127909594923025" />
-      <entry key="M5" value="67.86854932780376" />
-      <entry key="M10" value="117.3431075803202" />
-      <entry key="M15" value="209.62340041303227" />
-      <entry key="M30" value="517.5826248569161" />
-      <entry key="H1" value="914.8381642929753" />
-      <entry key="H2" value="1249.5526716416753" />
-      <entry key="H4" value="1469.769109961355" />
-      <entry key="D1" value="1688.0134145327936" />
-      <entry key="W1" value="1729.0501691229094" />
+      <entry key="MS100" value="1.0691864687672532" />
+      <entry key="MS500" value="2.492201425166207" />
+      <entry key="S2" value="5.527179547593655" />
+      <entry key="S5" value="7.345769712175078" />
+      <entry key="S10" value="8.360200163169884" />
+      <entry key="S30" value="9.343044888039541" />
+      <entry key="S60" value="9.670333550357102" />
+      <entry key="M2" value="10.875678214169147" />
+      <entry key="M5" value="23.573291403191796" />
+      <entry key="M10" value="62.57999992155335" />
+      <entry key="M15" value="132.78053024129431" />
+      <entry key="M30" value="406.1450308687677" />
+      <entry key="H1" value="810.3591335508734" />
+      <entry key="H2" value="1178.7601732704861" />
+      <entry key="H4" value="1431.459972148594" />
+      <entry key="D1" value="1688.637130905922" />
+      <entry key="W1" value="1737.6748602150603" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="2.833428023336455E-48" />
-      <entry key="MS500" value="3.0935877330985616E-10" />
-      <entry key="S2" value="0.004193876228625204" />
-      <entry key="S5" value="0.1119557087613563" />
-      <entry key="S10" value="0.3345978313757518" />
-      <entry key="S30" value="0.6942369220091447" />
-      <entry key="S60" value="0.8332115487465338" />
-      <entry key="M2" value="0.9144574681255304" />
-      <entry key="M5" value="1.0413415013940512" />
-      <entry key="M10" value="1.2597273239707683" />
-      <entry key="M15" value="1.4136682733942645" />
-      <entry key="M30" value="1.6464384424149847" />
-      <entry key="H1" value="1.8047396113855287" />
-      <entry key="H2" value="1.8972442563699345" />
-      <entry key="H4" value="1.9472714759926095" />
-      <entry key="D1" value="1.991018137359009" />
-      <entry key="W1" value="1.9987120484551215" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="1.323452258660834E-107" />
+      <entry key="S5" value="1.7728962107425751E-43" />
+      <entry key="S10" value="4.2105774078415525E-22" />
+      <entry key="S30" value="7.495153851826292E-8" />
+      <entry key="S60" value="2.7377368600039185E-4" />
+      <entry key="M2" value="0.016576075729896483" />
+      <entry key="M5" value="0.2093728966398707" />
+      <entry key="M10" value="0.5648591806189432" />
+      <entry key="M15" value="0.8281772052975357" />
+      <entry key="M30" value="1.2601823091384674" />
+      <entry key="H1" value="1.578914055834415" />
+      <entry key="H2" value="1.7745785058289656" />
+      <entry key="H4" value="1.8832695624596236" />
+      <entry key="D1" value="1.979959075696933" />
+      <entry key="W1" value="1.9971222889909388" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.847983693687537" />
-      <entry key="MS500" value="5.764712570307506" />
-      <entry key="S2" value="11.156511731924267" />
-      <entry key="S5" value="19.177943252206962" />
-      <entry key="S10" value="27.676268232041192" />
-      <entry key="S30" value="42.0504056900336" />
-      <entry key="S60" value="51.43323534854683" />
-      <entry key="M2" value="59.03116892900125" />
-      <entry key="M5" value="68.9045661700166" />
-      <entry key="M10" value="118.59942937727118" />
-      <entry key="M15" value="211.03424178077282" />
-      <entry key="M30" value="519.2269153938162" />
-      <entry key="H1" value="916.6414035242653" />
-      <entry key="H2" value="1251.448992385993" />
-      <entry key="H4" value="1471.715863441127" />
-      <entry key="D1" value="1690.0043371133563" />
-      <entry key="W1" value="1731.048867273433" />
+      <entry key="MS100" value="1.0270267511542759" />
+      <entry key="MS500" value="2.477725151555792" />
+      <entry key="S2" value="5.520386595037778" />
+      <entry key="S5" value="7.342160285988771" />
+      <entry key="S10" value="8.358034199132439" />
+      <entry key="S30" value="9.34217050478776" />
+      <entry key="S60" value="9.670136474541657" />
+      <entry key="M2" value="10.891811285321161" />
+      <entry key="M5" value="23.781495738814158" />
+      <entry key="M10" value="63.14328274050355" />
+      <entry key="M15" value="133.6070183814646" />
+      <entry key="M30" value="407.40355265326923" />
+      <entry key="H1" value="811.9367266983155" />
+      <entry key="H2" value="1180.5338838364405" />
+      <entry key="H4" value="1433.342738670855" />
+      <entry key="D1" value="1690.616994610638" />
+      <entry key="W1" value="1739.6719685678936" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -190,7 +182,7 @@
       <updated>1783430732170</updated>
       <workItem from="1783430733175" duration="8487000" />
       <workItem from="1783992727456" duration="3567000" />
-      <workItem from="1784053462944" duration="3076000" />
+      <workItem from="1784053462944" duration="5545000" />
     </task>
     <task id="LOCAL-00001" summary="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
       <option name="closed" value="true" />
@@ -216,7 +208,23 @@
       <option name="project" value="LOCAL" />
       <updated>1783995221838</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Phase 2">
+      <option name="closed" value="true" />
+      <created>1784056557551</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1784056557551</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Phase 2.. But all of it this time xd">
+      <option name="closed" value="true" />
+      <created>1784056583875</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1784056583875</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -226,6 +234,8 @@
     <MESSAGE value="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation." />
     <MESSAGE value="Add gitignore, workspace.xml update." />
     <MESSAGE value="Phase 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Phase 1" />
+    <MESSAGE value="Phase 2" />
+    <MESSAGE value="Phase 2.. But all of it this time xd" />
+    <option name="LAST_COMMIT_MESSAGE" value="Phase 2.. But all of it this time xd" />
   </component>
 </project>

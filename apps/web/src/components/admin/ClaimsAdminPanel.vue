@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { ClaimKey, RankComparison } from '@aero/shared';
+import {
+  formatUserRef,
+  type ClaimGrantView,
+  type ClaimKey,
+  type RankComparison,
+} from '@aero/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { computed, reactive, ref } from 'vue';
 
@@ -9,7 +14,6 @@ import {
   deleteMapping,
   fetchAdminClaims,
   revokeGrant,
-  type ClaimGrant,
 } from '../../api/adminClaims';
 import { ApiError } from '../../api/client';
 
@@ -114,11 +118,11 @@ const addGrant = useMutation({
 
 const revokeDialog = reactive({
   open: false,
-  grant: null as ClaimGrant | null,
+  grant: null as ClaimGrantView | null,
   reason: '',
 });
 
-function openRevokeDialog(grant: ClaimGrant) {
+function openRevokeDialog(grant: ClaimGrantView) {
   revokeDialog.open = true;
   revokeDialog.grant = grant;
   revokeDialog.reason = '';
@@ -226,14 +230,14 @@ const revoke = useMutation({
           </thead>
           <tbody>
             <tr v-for="grant in claim.grants" :key="grant.id">
-              <td>{{ grant.username ?? grant.userId }}</td>
+              <td>{{ formatUserRef(grant.user) }}</td>
               <td>
                 <v-chip :color="grant.isNegative ? 'error' : 'success'" size="x-small">
                   {{ grant.isNegative ? 'negative' : 'positive' }}
                 </v-chip>
               </td>
               <td>{{ grant.reason }}</td>
-              <td>{{ grant.grantedByUsername ?? grant.grantedBy ?? 'system' }}</td>
+              <td>{{ formatUserRef(grant.grantedBy) }}</td>
               <td class="text-right">
                 <v-btn size="x-small" variant="text" @click="openRevokeDialog(grant)">
                   Revoke
@@ -331,7 +335,7 @@ const revoke = useMutation({
       <v-card-text>
         <p class="mb-3">
           Revoke the {{ revokeDialog.grant?.isNegative ? 'negative' : 'positive' }} grant for
-          <strong>{{ revokeDialog.grant?.username ?? revokeDialog.grant?.userId }}</strong
+          <strong>{{ formatUserRef(revokeDialog.grant?.user) }}</strong
           >?
         </p>
         <v-textarea

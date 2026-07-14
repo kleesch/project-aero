@@ -4,16 +4,27 @@ import {
   directClaimGrantRevokeSchema,
   groupClaimMappingCreateSchema,
   isClaimKey,
+  type AdminClaimView,
+  type ClaimGrantView,
+  type ClaimSourceView,
+  type DirectGrantSourceView,
+  type UserClaimsLookupView,
 } from '@aero/shared';
-import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, eq, isNull } from 'drizzle-orm';
 import { Router, type Request, type Response } from 'express';
 import { z, type ZodType } from 'zod';
 
-import { resolveUserClaims } from '../claims/resolution.js';
+import {
+  resolveUserClaims,
+  type ClaimSource,
+  type DirectGrantSource,
+  type GrantRow,
+} from '../claims/resolution.js';
 import { db } from '../db/client.js';
 import { claimDefinitions, directClaimGrants, groupClaimMappings, users } from '../db/schema.js';
 import { requireClaim } from '../middleware/claims.js';
 import { findRobloxUserById, findRobloxUserByUsername, type RobloxUser } from '../roblox/users.js';
+import { loadUserRefs, type UserRefLookup } from '../services/user-refs.js';
 
 /**
  * Claim management (see implementation-breakdown/02 — Claim management API).
@@ -65,6 +76,18 @@ async function ensureUserRow(identity: RobloxUser): Promise<void> {
     .onConflictDoNothing();
 }
 
+/** Serializes a grant row for the wire, hydrating its ids into UserRefs. */
+function toGrantView(grant: GrantRow, refs: UserRefLookup): ClaimGrantView {
+  return {
+    id: grant.id,
+    user: refs(grant.userId),
+    isNegative: grant.isNegative,
+    reason: grant.reason,
+    grantedBy: refs(grant.grantedBy),
+    grantedAt: grant.grantedAt.toISOString(),
+  };
+}
+
 // --- Claims overview -------------------------------------------------------
 
 adminClaimsRouter.get('/claims', async (_req, res, next) => {
@@ -79,46 +102,28 @@ adminClaimsRouter.get('/claims', async (_req, res, next) => {
         .orderBy(asc(directClaimGrants.grantedAt)),
     ]);
 
-    // One lookup for every username the response mentions.
-    const userIds = new Set<number>();
-    for (const grant of grants) {
-      userIds.add(grant.userId);
-      if (grant.grantedBy !== null) userIds.add(grant.grantedBy);
-    }
-    const userRows = userIds.size
-      ? await db
-          .select()
-          .from(users)
-          .where(inArray(users.robloxUserId, [...userIds]))
-      : [];
-    const usernames = new Map(userRows.map((row) => [row.robloxUserId, row.username]));
+    const refs = await loadUserRefs(grants.flatMap((grant) => [grant.userId, grant.grantedBy]));
 
     res.json(
-      definitions.map((definition) => ({
-        key: definition.key,
-        description: definition.description,
-        mappings: mappings
-          .filter((mapping) => mapping.claimKey === definition.key)
-          .map(({ id, groupId, comparison, rankValue }) => ({
-            id,
-            groupId,
-            comparison,
-            rankValue,
-          })),
-        grants: grants
-          .filter((grant) => grant.claimKey === definition.key)
-          .map((grant) => ({
-            id: grant.id,
-            userId: grant.userId,
-            username: usernames.get(grant.userId) ?? null,
-            isNegative: grant.isNegative,
-            reason: grant.reason,
-            grantedBy: grant.grantedBy,
-            grantedByUsername:
-              grant.grantedBy === null ? null : (usernames.get(grant.grantedBy) ?? null),
-            grantedAt: grant.grantedAt,
-          })),
-      })),
+      definitions.flatMap((definition) => {
+        // Seeded from the shared registry; anything else is not a claim.
+        if (!isClaimKey(definition.key)) return [];
+        return {
+          key: definition.key,
+          description: definition.description,
+          mappings: mappings
+            .filter((mapping) => mapping.claimKey === definition.key)
+            .map(({ id, groupId, comparison, rankValue }) => ({
+              id,
+              groupId,
+              comparison,
+              rankValue,
+            })),
+          grants: grants
+            .filter((grant) => grant.claimKey === definition.key)
+            .map((grant) => toGrantView(grant, refs)),
+        };
+      }) satisfies AdminClaimView[],
     );
   } catch (error) {
     next(error);
@@ -213,7 +218,9 @@ adminClaimsRouter.post('/grants', async (req, res, next) => {
         grantedBy: req.user?.robloxUserId ?? null,
       })
       .returning();
-    res.status(201).json(created);
+    if (!created) throw new Error('Grant insert returned no row.');
+    const refs = await loadUserRefs([created.userId, created.grantedBy]);
+    res.status(201).json(toGrantView(created, refs));
   } catch (error) {
     if (isUniqueViolation(error)) {
       res.status(409).json({ error: 'An equivalent active grant already exists.' });
@@ -243,7 +250,8 @@ adminClaimsRouter.post('/grants/:id/revoke', async (req, res, next) => {
       res.status(404).json({ error: 'No active grant with that id.' });
       return;
     }
-    res.json(revoked);
+    const refs = await loadUserRefs([revoked.userId, revoked.grantedBy]);
+    res.json(toGrantView(revoked, refs));
   } catch (error) {
     next(error);
   }
@@ -270,6 +278,21 @@ adminClaimsRouter.get('/users/:query/claims', async (req, res, next) => {
     await ensureUserRow(identity);
     const resolution = await resolveUserClaims(identity.robloxUserId);
 
+    // Hydrate every grantor the provenance mentions in one lookup.
+    const grantSources = [
+      ...resolution.resolved.flatMap((entry) => entry.sources),
+      ...resolution.blocked.flatMap((entry) => [entry.blockedBy, ...entry.overriddenSources]),
+    ].filter((source): source is DirectGrantSource => source.type === 'direct-grant');
+    const refs = await loadUserRefs(grantSources.map((source) => source.grantedBy));
+
+    const toDirectGrantSourceView = (source: DirectGrantSource): DirectGrantSourceView => ({
+      ...source,
+      grantedBy: refs(source.grantedBy),
+      grantedAt: source.grantedAt.toISOString(),
+    });
+    const toSourceView = (source: ClaimSource): ClaimSourceView =>
+      source.type === 'direct-grant' ? toDirectGrantSourceView(source) : source;
+
     const [userRow] = await db
       .select()
       .from(users)
@@ -280,12 +303,19 @@ adminClaimsRouter.get('/users/:query/claims', async (req, res, next) => {
         username: userRow?.username ?? identity.username,
         displayName: userRow?.displayName ?? identity.displayName,
         avatarUrl: userRow?.avatarUrl ?? null,
-        lastLoginAt: userRow?.lastLoginAt ?? null,
+        lastLoginAt: userRow?.lastLoginAt?.toISOString() ?? null,
       },
       claims: resolution.claims,
-      resolved: resolution.resolved,
-      blocked: resolution.blocked,
-    });
+      resolved: resolution.resolved.map(({ key, sources }) => ({
+        key,
+        sources: sources.map(toSourceView),
+      })),
+      blocked: resolution.blocked.map(({ key, blockedBy, overriddenSources }) => ({
+        key,
+        blockedBy: toDirectGrantSourceView(blockedBy),
+        overriddenSources: overriddenSources.map(toSourceView),
+      })),
+    } satisfies UserClaimsLookupView);
   } catch (error) {
     next(error);
   }
