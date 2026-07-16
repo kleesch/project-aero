@@ -13,7 +13,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   /** Main application/API port. */
   PORT: z.coerce.number().int().positive().default(3000),
-  /** Reserved for the separate-origin PDF proxy (wired up in phase 03). */
+  /** Port of the separate-origin PDF proxy (see DESIGN.md — PDF Storage & Safety). */
   FILE_ORIGIN_PORT: z.coerce.number().int().positive().default(3001),
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
@@ -40,9 +40,31 @@ const envSchema = z.object({
    * must stay off for plain-http local dev.
    */
   COOKIE_SECURE: z.stringbool().optional(),
+  /**
+   * S3-compatible object storage: Cloudflare R2 in production, MinIO locally
+   * — one code path (see DESIGN.md — PDF Storage & Safety). Endpoint and
+   * credentials default to the compose MinIO service outside production and
+   * are required in production — enforced below.
+   */
+  S3_ENDPOINT: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
+  S3_ACCESS_KEY_ID: z.preprocess((v) => (v === '' ? undefined : v), z.string().optional()),
+  S3_SECRET_ACCESS_KEY: z.preprocess((v) => (v === '' ? undefined : v), z.string().optional()),
+  S3_BUCKET: z.string().default('aero-documents'),
+  /** R2 wants 'auto'; MinIO ignores it. */
+  S3_REGION: z.string().default('auto'),
+  /**
+   * Public base URL of the separate file origin, used to build the document
+   * URLs handed to the browser (e.g. https://files.example.com in prod).
+   */
+  FILE_ORIGIN_BASE_URL: z.url().default('http://localhost:3001'),
 });
 
-export type Config = z.infer<typeof envSchema> & { COOKIE_SECURE: boolean };
+export type Config = z.infer<typeof envSchema> & {
+  COOKIE_SECURE: boolean;
+  S3_ENDPOINT: string;
+  S3_ACCESS_KEY_ID: string;
+  S3_SECRET_ACCESS_KEY: string;
+};
 
 function loadConfig(): Config {
   const result = envSchema.safeParse(process.env);
@@ -69,9 +91,26 @@ function loadConfig(): Config {
       );
       process.exit(1);
     }
+    if (
+      !result.data.S3_ENDPOINT ||
+      !result.data.S3_ACCESS_KEY_ID ||
+      !result.data.S3_SECRET_ACCESS_KEY
+    ) {
+      console.error(
+        'Refusing to start: S3_ENDPOINT, S3_ACCESS_KEY_ID, and S3_SECRET_ACCESS_KEY are required in production.',
+      );
+      process.exit(1);
+    }
   }
 
-  return { ...result.data, COOKIE_SECURE: cookieSecure };
+  return {
+    ...result.data,
+    COOKIE_SECURE: cookieSecure,
+    // Outside production, fall back to the compose MinIO service.
+    S3_ENDPOINT: result.data.S3_ENDPOINT ?? 'http://localhost:9000',
+    S3_ACCESS_KEY_ID: result.data.S3_ACCESS_KEY_ID ?? 'aero',
+    S3_SECRET_ACCESS_KEY: result.data.S3_SECRET_ACCESS_KEY ?? 'aero_dev_password',
+  };
 }
 
 export const config = loadConfig();

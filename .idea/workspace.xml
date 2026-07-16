@@ -4,15 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 2.. But all of it this time xd">
+    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types.">
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/db/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/db/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/db/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/api/adminClaims.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/api/adminClaims.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/ClaimsAdminPanel.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/ClaimsAdminPanel.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/UserClaimsLookup.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/UserClaimsLookup.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/implementation-breakdown/03-audit-log-and-pdf-pipeline.md" beforeDir="false" afterPath="$PROJECT_DIR$/implementation-breakdown/03-audit-log-and-pdf-pipeline.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/api/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/infra/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/infra/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/shared/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +34,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -44,62 +54,65 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0691864687672532" />
-      <entry key="MS500" value="2.492201425166207" />
-      <entry key="S2" value="5.527179547593655" />
-      <entry key="S5" value="7.345769712175078" />
-      <entry key="S10" value="8.360200163169884" />
-      <entry key="S30" value="9.343044888039541" />
-      <entry key="S60" value="9.670333550357102" />
-      <entry key="M2" value="10.875678214169147" />
-      <entry key="M5" value="23.573291403191796" />
-      <entry key="M10" value="62.57999992155335" />
-      <entry key="M15" value="132.78053024129431" />
-      <entry key="M30" value="406.1450308687677" />
-      <entry key="H1" value="810.3591335508734" />
-      <entry key="H2" value="1178.7601732704861" />
-      <entry key="H4" value="1431.459972148594" />
-      <entry key="D1" value="1688.637130905922" />
-      <entry key="W1" value="1737.6748602150603" />
+      <entry key="MS100" value="1.2800994273228565" />
+      <entry key="MS500" value="4.584438009877964" />
+      <entry key="S2" value="10.465926304876346" />
+      <entry key="S5" value="12.920704919555034" />
+      <entry key="S10" value="13.909468512368674" />
+      <entry key="S30" value="14.62448469505328" />
+      <entry key="S60" value="14.810695814919695" />
+      <entry key="M2" value="14.904957737106669" />
+      <entry key="M5" value="14.96188899723714" />
+      <entry key="M10" value="14.980928777458022" />
+      <entry key="M15" value="14.987282355209931" />
+      <entry key="M30" value="14.993639428680627" />
+      <entry key="H1" value="14.996819877728758" />
+      <entry key="H2" value="15.030504320186392" />
+      <entry key="H4" value="22.468571034624723" />
+      <entry key="D1" value="718.267170346151" />
+      <entry key="W1" value="1548.2867505896331" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
-      <entry key="S2" value="1.323452258660834E-107" />
-      <entry key="S5" value="1.7728962107425751E-43" />
-      <entry key="S10" value="4.2105774078415525E-22" />
-      <entry key="S30" value="7.495153851826292E-8" />
-      <entry key="S60" value="2.7377368600039185E-4" />
-      <entry key="M2" value="0.016576075729896483" />
-      <entry key="M5" value="0.2093728966398707" />
-      <entry key="M10" value="0.5648591806189432" />
-      <entry key="M15" value="0.8281772052975357" />
-      <entry key="M30" value="1.2601823091384674" />
-      <entry key="H1" value="1.578914055834415" />
-      <entry key="H2" value="1.7745785058289656" />
-      <entry key="H4" value="1.8832695624596236" />
-      <entry key="D1" value="1.979959075696933" />
-      <entry key="W1" value="1.9971222889909388" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="2.0894291388497993E-276" />
+      <entry key="M5" value="5.769508684506875E-111" />
+      <entry key="M10" value="9.376686081489939E-56" />
+      <entry key="M15" value="2.5014744007006168E-37" />
+      <entry key="M30" value="6.925797249032535E-19" />
+      <entry key="H1" value="1.1705142047376532E-9" />
+      <entry key="H2" value="4.831748446264658E-5" />
+      <entry key="H4" value="0.009826911316034309" />
+      <entry key="D1" value="0.8245942562321573" />
+      <entry key="W1" value="1.7622175776051103" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.0270267511542759" />
-      <entry key="MS500" value="2.477725151555792" />
-      <entry key="S2" value="5.520386595037778" />
-      <entry key="S5" value="7.342160285988771" />
-      <entry key="S10" value="8.358034199132439" />
-      <entry key="S30" value="9.34217050478776" />
-      <entry key="S60" value="9.670136474541657" />
-      <entry key="M2" value="10.891811285321161" />
-      <entry key="M5" value="23.781495738814158" />
-      <entry key="M10" value="63.14328274050355" />
-      <entry key="M15" value="133.6070183814646" />
-      <entry key="M30" value="407.40355265326923" />
-      <entry key="H1" value="811.9367266983155" />
-      <entry key="H2" value="1180.5338838364405" />
-      <entry key="H4" value="1433.342738670855" />
-      <entry key="D1" value="1690.616994610638" />
-      <entry key="W1" value="1739.6719685678936" />
+      <entry key="MS100" value="1.2056180719078546" />
+      <entry key="MS500" value="4.546055729516377" />
+      <entry key="S2" value="10.444811229794578" />
+      <entry key="S5" value="12.910305536401493" />
+      <entry key="S10" value="13.90387414078414" />
+      <entry key="S30" value="14.622524639773347" />
+      <entry key="S60" value="14.80970337417072" />
+      <entry key="M2" value="14.904458374284722" />
+      <entry key="M5" value="14.961688492851419" />
+      <entry key="M10" value="14.98082839829753" />
+      <entry key="M15" value="14.987215407523019" />
+      <entry key="M30" value="14.993605940705985" />
+      <entry key="H1" value="14.996803131376698" />
+      <entry key="H2" value="15.030544239394391" />
+      <entry key="H4" value="22.47839113353089" />
+      <entry key="D1" value="719.0917241852422" />
+      <entry key="W1" value="1550.0489557705646" />
     </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2,
@@ -182,7 +195,7 @@
       <updated>1783430732170</updated>
       <workItem from="1783430733175" duration="8487000" />
       <workItem from="1783992727456" duration="3567000" />
-      <workItem from="1784053462944" duration="5545000" />
+      <workItem from="1784053462944" duration="10521000" />
     </task>
     <task id="LOCAL-00001" summary="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
       <option name="closed" value="true" />
@@ -224,7 +237,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784056583875</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types.">
+      <option name="closed" value="true" />
+      <created>1784059080744</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1784059080744</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -236,6 +257,8 @@
     <MESSAGE value="Phase 1" />
     <MESSAGE value="Phase 2" />
     <MESSAGE value="Phase 2.. But all of it this time xd" />
-    <option name="LAST_COMMIT_MESSAGE" value="Phase 2.. But all of it this time xd" />
+    <MESSAGE value="Phase 2: Complete user hydration logic for audit and claims systems." />
+    <MESSAGE value="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types." />
+    <option name="LAST_COMMIT_MESSAGE" value="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types." />
   </component>
 </project>

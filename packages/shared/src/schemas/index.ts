@@ -12,3 +12,5 @@
  * - Everything is re-exported from this barrel file.
  */
 export * from './claims.js';
+export * from './audit.js';
+export * from './documents.js';

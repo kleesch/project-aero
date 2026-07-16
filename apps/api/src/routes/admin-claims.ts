@@ -1,4 +1,6 @@
 import {
+  AUDIT_ACTIONS,
+  AUDIT_ENTITIES,
   CLAIM_KEYS,
   directClaimGrantCreateSchema,
   directClaimGrantRevokeSchema,
@@ -24,6 +26,7 @@ import { db } from '../db/client.js';
 import { claimDefinitions, directClaimGrants, groupClaimMappings, users } from '../db/schema.js';
 import { requireClaim } from '../middleware/claims.js';
 import { findRobloxUserById, findRobloxUserByUsername, type RobloxUser } from '../roblox/users.js';
+import { audit, auditContext, toSnapshot } from '../services/audit.js';
 import { loadUserRefs, type UserRefLookup } from '../services/user-refs.js';
 
 /**
@@ -142,10 +145,21 @@ adminClaimsRouter.post('/claims/:key/mappings', async (req, res, next) => {
     const body = parseBody(groupClaimMappingCreateSchema, req, res);
     if (!body) return;
 
-    const [created] = await db
-      .insert(groupClaimMappings)
-      .values({ claimKey: key, ...body })
-      .returning();
+    const created = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(groupClaimMappings)
+        .values({ claimKey: key, ...body })
+        .returning();
+      if (!row) throw new Error('Mapping insert returned no row.');
+      await audit(tx, {
+        ...auditContext(req),
+        actionKey: AUDIT_ACTIONS.CLAIM_MAPPING_CREATE,
+        entityType: AUDIT_ENTITIES.GROUP_CLAIM_MAPPING,
+        entityId: row.id,
+        after: toSnapshot(row),
+      });
+      return row;
+    });
     res.status(201).json(created);
   } catch (error) {
     next(error);
@@ -159,11 +173,29 @@ adminClaimsRouter.put('/mappings/:id', async (req, res, next) => {
     const body = parseBody(groupClaimMappingCreateSchema, req, res);
     if (!body) return;
 
-    const [updated] = await db
-      .update(groupClaimMappings)
-      .set({ ...body, updatedAt: new Date() })
-      .where(eq(groupClaimMappings.id, id))
-      .returning();
+    const updated = await db.transaction(async (tx) => {
+      const [before] = await tx
+        .select()
+        .from(groupClaimMappings)
+        .where(eq(groupClaimMappings.id, id))
+        .for('update');
+      if (!before) return null;
+      const [after] = await tx
+        .update(groupClaimMappings)
+        .set({ ...body, updatedAt: new Date() })
+        .where(eq(groupClaimMappings.id, id))
+        .returning();
+      if (!after) throw new Error('Mapping update returned no row.');
+      await audit(tx, {
+        ...auditContext(req),
+        actionKey: AUDIT_ACTIONS.CLAIM_MAPPING_UPDATE,
+        entityType: AUDIT_ENTITIES.GROUP_CLAIM_MAPPING,
+        entityId: after.id,
+        before: toSnapshot(before),
+        after: toSnapshot(after),
+      });
+      return after;
+    });
     if (!updated) {
       res.status(404).json({ error: 'Mapping not found.' });
       return;
@@ -178,11 +210,22 @@ adminClaimsRouter.delete('/mappings/:id', async (req, res, next) => {
   try {
     const id = parseIdParam(req.params.id, res);
     if (id === null) return;
-    const deleted = await db
-      .delete(groupClaimMappings)
-      .where(eq(groupClaimMappings.id, id))
-      .returning();
-    if (deleted.length === 0) {
+    const deleted = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .delete(groupClaimMappings)
+        .where(eq(groupClaimMappings.id, id))
+        .returning();
+      if (!row) return null;
+      await audit(tx, {
+        ...auditContext(req),
+        actionKey: AUDIT_ACTIONS.CLAIM_MAPPING_DELETE,
+        entityType: AUDIT_ENTITIES.GROUP_CLAIM_MAPPING,
+        entityId: row.id,
+        before: toSnapshot(row),
+      });
+      return row;
+    });
+    if (!deleted) {
       res.status(404).json({ error: 'Mapping not found.' });
       return;
     }
@@ -208,17 +251,27 @@ adminClaimsRouter.post('/grants', async (req, res, next) => {
     }
     await ensureUserRow(identity);
 
-    const [created] = await db
-      .insert(directClaimGrants)
-      .values({
-        userId: body.userId,
-        claimKey: body.claimKey,
-        isNegative: body.isNegative,
-        reason: body.reason,
-        grantedBy: req.user?.robloxUserId ?? null,
-      })
-      .returning();
-    if (!created) throw new Error('Grant insert returned no row.');
+    const created = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(directClaimGrants)
+        .values({
+          userId: body.userId,
+          claimKey: body.claimKey,
+          isNegative: body.isNegative,
+          reason: body.reason,
+          grantedBy: req.user?.robloxUserId ?? null,
+        })
+        .returning();
+      if (!row) throw new Error('Grant insert returned no row.');
+      await audit(tx, {
+        ...auditContext(req),
+        actionKey: AUDIT_ACTIONS.CLAIM_GRANT_CREATE,
+        entityType: AUDIT_ENTITIES.DIRECT_CLAIM_GRANT,
+        entityId: row.id,
+        after: toSnapshot(row),
+      });
+      return row;
+    });
     const refs = await loadUserRefs([created.userId, created.grantedBy]);
     res.status(201).json(toGrantView(created, refs));
   } catch (error) {
@@ -237,15 +290,33 @@ adminClaimsRouter.post('/grants/:id/revoke', async (req, res, next) => {
     const body = parseBody(directClaimGrantRevokeSchema, req, res);
     if (!body) return;
 
-    const [revoked] = await db
-      .update(directClaimGrants)
-      .set({
-        revokedAt: new Date(),
-        revokedBy: req.user?.robloxUserId ?? null,
-        revokeReason: body.reason,
-      })
-      .where(and(eq(directClaimGrants.id, id), isNull(directClaimGrants.revokedAt)))
-      .returning();
+    const revoked = await db.transaction(async (tx) => {
+      const [before] = await tx
+        .select()
+        .from(directClaimGrants)
+        .where(and(eq(directClaimGrants.id, id), isNull(directClaimGrants.revokedAt)))
+        .for('update');
+      if (!before) return null;
+      const [after] = await tx
+        .update(directClaimGrants)
+        .set({
+          revokedAt: new Date(),
+          revokedBy: req.user?.robloxUserId ?? null,
+          revokeReason: body.reason,
+        })
+        .where(eq(directClaimGrants.id, id))
+        .returning();
+      if (!after) throw new Error('Grant revoke returned no row.');
+      await audit(tx, {
+        ...auditContext(req),
+        actionKey: AUDIT_ACTIONS.CLAIM_GRANT_REVOKE,
+        entityType: AUDIT_ENTITIES.DIRECT_CLAIM_GRANT,
+        entityId: after.id,
+        before: toSnapshot(before),
+        after: toSnapshot(after),
+      });
+      return after;
+    });
     if (!revoked) {
       res.status(404).json({ error: 'No active grant with that id.' });
       return;

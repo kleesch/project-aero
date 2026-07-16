@@ -10,6 +10,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 /**
@@ -115,6 +116,67 @@ export const directClaimGrants = pgTable(
     uniqueIndex('direct_claim_grants_active_unique')
       .on(table.userId, table.claimKey, table.isNegative)
       .where(sql`${table.revokedAt} IS NULL`),
+  ],
+);
+
+/**
+ * Append-only record of every mutation (see DESIGN.md — Auditing). A trigger
+ * in the migration rejects UPDATE/DELETE/TRUNCATE at the database level, so
+ * even the application role cannot rewrite history. `actor_user_id` is null
+ * for system actions (jobs, migrations); names are never stored here — they
+ * hydrate from the `users` snapshot at read time via loadUserRefs.
+ */
+export const auditEvents = pgTable(
+  'audit_events',
+  {
+    id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    actorUserId: bigint('actor_user_id', { mode: 'number' }).references(
+      () => users.robloxUserId,
+    ),
+    /** Key from the shared AUDIT_ACTIONS registry, e.g. `claims.grant.create`. */
+    actionKey: text('action_key').notNull(),
+    entityType: text('entity_type').notNull(),
+    /** Stringified — entity keys vary (integer ids, UUIDs). */
+    entityId: text('entity_id').notNull(),
+    before: jsonb('before').$type<Record<string, unknown>>(),
+    after: jsonb('after').$type<Record<string, unknown>>(),
+    /** Actor-supplied justification where the action demands one (quarantine, restore). */
+    reason: text('reason'),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull().defaultNow(),
+    requestIp: text('request_ip'),
+  },
+  (table) => [
+    index('audit_events_actor_user_id_idx').on(table.actorUserId),
+    index('audit_events_entity_idx').on(table.entityType, table.entityId),
+    index('audit_events_action_key_idx').on(table.actionKey),
+    index('audit_events_occurred_at_idx').on(table.occurredAt),
+  ],
+);
+
+/**
+ * Every stored PDF (see DESIGN.md — PDF Storage & Safety). The uuid id is
+ * also the object key in the bucket — random, never user-derived. The
+ * user-supplied filename is display metadata only, sanitized before it ever
+ * appears in a header. Quarantine (`quarantined_at`) makes the file origin
+ * answer 410 platform-wide without touching referencing records.
+ */
+export const documents = pgTable(
+  'documents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uploaderUserId: bigint('uploader_user_id', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    byteSize: integer('byte_size').notNull(),
+    sha256: text('sha256').notNull(),
+    mime: text('mime').notNull(),
+    displayFilename: text('display_filename').notNull(),
+    quarantinedAt: timestamp('quarantined_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('documents_uploader_user_id_idx').on(table.uploaderUserId),
+    index('documents_created_at_idx').on(table.createdAt),
   ],
 );
 

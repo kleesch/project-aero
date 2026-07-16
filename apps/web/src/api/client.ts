@@ -14,7 +14,8 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   const response = await fetch(path, {
     headers: {
       Accept: 'application/json',
-      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+      // String bodies are JSON here; FormData sets its own multipart type.
+      ...(typeof init?.body === 'string' ? { 'Content-Type': 'application/json' } : {}),
     },
     ...init,
   });

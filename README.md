@@ -11,7 +11,7 @@ npm workspaces monorepo:
 
 ```
 apps/
-  api/        Express 5 API, background jobs, (future) PDF file-origin proxy
+  api/        Express 5 API, background jobs, and the separate-origin PDF proxy
   web/        Vue 3 + Vuetify 4 SPA (Vite, vue-router, TanStack Query)
 packages/
   shared/     Single source of truth: claim keys, bill enums, congress-session
@@ -37,7 +37,7 @@ This brings up:
 | -------------- | ------------------------------------- | --------------------------------- |
 | Web (Vite dev) | http://localhost:5173                 | Vuetify shell, proxies `/api`     |
 | API            | http://localhost:3000/api/health      | Migrations apply on boot          |
-| File origin    | http://localhost:3001                 | Reserved; wired up in phase 03    |
+| File origin    | http://localhost:3001/health          | Serves stored PDFs (see below)    |
 | Postgres       | postgresql://localhost:5432           | Credentials from `.env`           |
 | MinIO          | http://localhost:9000 (console: 9001) | Local Cloudflare R2 stand-in; the |
 |                |                                       | documents bucket is auto-created  |
@@ -88,6 +88,29 @@ source for the redirect URI and post-login redirect — point it at the origin u
 Sessions are server-side (Postgres `sessions` table) behind an httpOnly `SameSite=Lax` cookie
 with sliding expiry; logout (`POST /auth/logout`) revokes server-side. ROBLOX user `9725456` is
 seeded as the initial admin and can manage claims at `/admin` after logging in.
+
+## Documents & the two-origin setup
+
+User-submitted PDFs are treated as hostile (see DESIGN.md — PDF Storage & Safety). Uploads go
+through the API (`POST /api/documents`, authenticated, 20 MB cap, `%PDF-` magic-byte check) into
+MinIO locally / Cloudflare R2 in production. Files are **never served by the app origin**:
+a second Express entry point streams them on their own port with
+`Content-Security-Policy: sandbox`, `nosniff`, and immutable-cache headers, so a malicious PDF
+runs in a context where there is no session and no app DOM to attack.
+
+Locally the two origins are ports on localhost:
+
+- App: `http://localhost:5173` (Vite; proxies `/api` and `/auth` to `localhost:3000`)
+- Files: `http://localhost:3001/files/<document-id>` (`FILE_ORIGIN_BASE_URL`)
+
+In production the file origin gets its own hostname (e.g. `files.example.com`) routed to the
+file port; set `FILE_ORIGIN_BASE_URL` accordingly. Admins can quarantine any document at
+`/admin` → Documents — its URL answers `410 Gone` from the next request on.
+
+Every mutation on the platform lands in the append-only `audit_events` table (UPDATE/DELETE are
+rejected by a database trigger). Holders of `audit:view` can browse and filter the log at
+`/admin` → Audit log, inspect before/after snapshots, and — with the `admin` claim — restore an
+opted-in record from its `before` snapshot.
 
 ## Development commands
 
