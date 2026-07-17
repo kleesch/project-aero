@@ -112,9 +112,7 @@ function setQuarantine(quarantine: boolean) {
           res.status(404).json({ error: 'Document not found.' });
         } else {
           res.status(409).json({
-            error: quarantine
-              ? 'Document is already quarantined.'
-              : 'Document is not quarantined.',
+            error: quarantine ? 'Document is already quarantined.' : 'Document is not quarantined.',
           });
         }
         return;

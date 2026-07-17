@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import {
-  MAX_PDF_BYTES,
-  sanitizePdfFilename,
-  validatePdfUpload,
-} from './documents.js';
+import { MAX_PDF_BYTES, sanitizePdfFilename, validatePdfUpload } from './documents.js';
 
 vi.mock('../db/client.js', () => ({ db: {} }));
 vi.mock('./storage.js', () => ({ putObject: vi.fn(), deleteObject: vi.fn() }));
@@ -26,10 +22,7 @@ describe('validatePdfUpload', () => {
   });
 
   it('rejects files over the 20 MB cap', () => {
-    const oversized = Buffer.concat([
-      Buffer.from('%PDF-'),
-      Buffer.alloc(MAX_PDF_BYTES),
-    ]);
+    const oversized = Buffer.concat([Buffer.from('%PDF-'), Buffer.alloc(MAX_PDF_BYTES)]);
     expect(validatePdfUpload(oversized, 'application/pdf')).toMatch(/20 MB/);
   });
 

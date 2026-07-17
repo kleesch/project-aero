@@ -1,9 +1,12 @@
+import { CONGRESS_TIME_ZONE } from '@aero/shared';
 import cron from 'node-cron';
 
 import { deleteExpiredSessions } from '../auth/sessions.js';
 import { pool } from '../db/client.js';
 import { logger } from '../logger.js';
 import { sweepGroupCache } from '../roblox/group-cache.js';
+import { rolloverExpiredBills } from '../services/session-rollover.js';
+import { syncRosters } from '../services/roster-sync.js';
 
 /**
  * In-process background jobs (see DESIGN.md — Background Jobs). Each job runs
@@ -15,6 +18,8 @@ import { sweepGroupCache } from '../roblox/group-cache.js';
 const LOCKS = {
   sessionCleanup: 202601,
   groupCacheSweep: 202602,
+  rosterRefresh: 202603,
+  sessionRollover: 202604,
 } as const;
 
 async function withAdvisoryLock(lockId: number, name: string, fn: () => Promise<void>) {
@@ -55,6 +60,29 @@ export function startJobs(): void {
       const evicted = await sweepGroupCache();
       logger.info({ evicted }, 'group cache sweep complete');
     }),
+  );
+
+  // Daily 02:00 ET: sync House/Senate rosters from the Congress group.
+  cron.schedule(
+    '0 2 * * *',
+    () =>
+      withAdvisoryLock(LOCKS.rosterRefresh, 'roster-refresh', async () => {
+        const summary = await syncRosters(null);
+        logger.info({ summary }, 'roster refresh complete');
+      }),
+    { timezone: CONGRESS_TIME_ZONE },
+  );
+
+  // Daily 00:05 ET, just after the month can roll over: kill still-active
+  // bills from prior sessions (the lazy guard on bill mutation backs this up).
+  cron.schedule(
+    '5 0 * * *',
+    () =>
+      withAdvisoryLock(LOCKS.sessionRollover, 'session-rollover', async () => {
+        const died = await rolloverExpiredBills();
+        logger.info({ died }, 'session rollover sweep complete');
+      }),
+    { timezone: CONGRESS_TIME_ZONE },
   );
 
   logger.info('background jobs scheduled');

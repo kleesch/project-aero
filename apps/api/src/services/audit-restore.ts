@@ -3,7 +3,7 @@ import { eq, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig, type PgTable } from 'drizzle-orm/pg-core';
 
 import type { DbTransaction } from '../db/client.js';
-import { directClaimGrants, groupClaimMappings } from '../db/schema.js';
+import { directClaimGrants, groupClaimMappings, rosterRankRules, tags } from '../db/schema.js';
 
 /**
  * Restore-from-audit (see DESIGN.md — Auditing → rollback-capable): an admin
@@ -32,6 +32,16 @@ const RESTORABLE_ENTITIES: Partial<Record<AuditEntityType, RestorableEntity>> = 
   },
   [AUDIT_ENTITIES.DIRECT_CLAIM_GRANT]: {
     table: directClaimGrants,
+    pkProp: 'id',
+    resyncSequence: true,
+  },
+  [AUDIT_ENTITIES.ROSTER_RANK_RULE]: {
+    table: rosterRankRules,
+    pkProp: 'id',
+    resyncSequence: true,
+  },
+  [AUDIT_ENTITIES.TAG]: {
+    table: tags,
     pkProp: 'id',
     resyncSequence: true,
   },

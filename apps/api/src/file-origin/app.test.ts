@@ -52,6 +52,9 @@ describe('GET /files/:id', () => {
     const response = await request(createFileOriginApp()).get(`/files/${DOC_ID}`).expect(200);
 
     expect(response.headers['content-security-policy']).toBe('sandbox');
+    // The app origin fetches the bytes to render them with pdf.js.
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+    expect(response.headers['access-control-expose-headers']).toBe('Content-Length');
     expect(response.headers['content-type']).toBe('application/pdf');
     expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response.headers['content-disposition']).toBe('inline; filename="ruling.pdf"');
@@ -75,6 +78,8 @@ describe('GET /files/:id', () => {
 
     const response = await request(createFileOriginApp()).get(`/files/${DOC_ID}`).expect(410);
     expect(response.headers['cache-control']).toBe('no-store');
+    // CORS must cover error statuses too, so the app's fetch can read them.
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173');
     expect(getObjectMock).not.toHaveBeenCalled();
   });
 

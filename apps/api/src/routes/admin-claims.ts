@@ -13,8 +13,7 @@ import {
   type UserClaimsLookupView,
 } from '@aero/shared';
 import { and, asc, eq, isNull } from 'drizzle-orm';
-import { Router, type Request, type Response } from 'express';
-import { z, type ZodType } from 'zod';
+import { Router } from 'express';
 
 import {
   resolveUserClaims,
@@ -28,6 +27,7 @@ import { requireClaim } from '../middleware/claims.js';
 import { findRobloxUserById, findRobloxUserByUsername, type RobloxUser } from '../roblox/users.js';
 import { audit, auditContext, toSnapshot } from '../services/audit.js';
 import { loadUserRefs, type UserRefLookup } from '../services/user-refs.js';
+import { isUniqueViolation, parseBody, parseIdParam } from './helpers.js';
 
 /**
  * Claim management (see implementation-breakdown/02 — Claim management API).
@@ -36,33 +36,6 @@ import { loadUserRefs, type UserRefLookup } from '../services/user-refs.js';
 export const adminClaimsRouter = Router();
 
 adminClaimsRouter.use(requireClaim(CLAIM_KEYS.CLAIMS_MANAGE));
-
-/** Parses a request body, answering 400 with the issues when it is invalid. */
-function parseBody<T>(schema: ZodType<T>, req: Request, res: Response): T | null {
-  const result = schema.safeParse(req.body);
-  if (!result.success) {
-    res.status(400).json({ error: 'Invalid request body.', issues: result.error.issues });
-    return null;
-  }
-  return result.data;
-}
-
-const idParamSchema = z.coerce.number().int().positive();
-
-function parseIdParam(raw: string | undefined, res: Response): number | null {
-  const result = idParamSchema.safeParse(raw);
-  if (!result.success) {
-    res.status(400).json({ error: 'Invalid id parameter.' });
-    return null;
-  }
-  return result.data;
-}
-
-function isUniqueViolation(error: unknown): boolean {
-  return (
-    typeof error === 'object' && error !== null && (error as { code?: string }).code === '23505'
-  );
-}
 
 /**
  * Makes sure a users row exists for a ROBLOX identity so grants and the

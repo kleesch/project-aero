@@ -14,6 +14,19 @@ export const AUDIT_ACTIONS = {
   DOCUMENT_QUARANTINE: 'documents.quarantine',
   DOCUMENT_UNQUARANTINE: 'documents.unquarantine',
   AUDIT_RESTORE: 'audit.restore',
+  ROSTER_SYNC: 'roster.sync',
+  ROSTER_RANK_RULE_CREATE: 'roster.rank-rule.create',
+  ROSTER_RANK_RULE_UPDATE: 'roster.rank-rule.update',
+  ROSTER_RANK_RULE_DELETE: 'roster.rank-rule.delete',
+  BILL_SUBMIT: 'bills.submit',
+  BILL_STAGE_TRANSITION: 'bills.stage.transition',
+  BILL_VERSION_UPLOAD: 'bills.version.upload',
+  BILL_VOTES_RECORD: 'bills.votes.record',
+  BILL_TAGS_UPDATE: 'bills.tags.update',
+  BILL_DIED_IN_SESSION: 'bills.died-in-session',
+  TAG_CREATE: 'tags.create',
+  TAG_UPDATE: 'tags.update',
+  TAG_DELETE: 'tags.delete',
 } as const;
 
 export type AuditActionKey = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -32,6 +45,10 @@ export const AUDIT_ENTITIES = {
   GROUP_CLAIM_MAPPING: 'group_claim_mapping',
   DIRECT_CLAIM_GRANT: 'direct_claim_grant',
   DOCUMENT: 'document',
+  CONGRESS_ROSTER: 'congress_roster',
+  ROSTER_RANK_RULE: 'roster_rank_rule',
+  BILL: 'bill',
+  TAG: 'tag',
 } as const;
 
 export type AuditEntityType = (typeof AUDIT_ENTITIES)[keyof typeof AUDIT_ENTITIES];
@@ -58,4 +75,17 @@ export const AUDIT_ACTION_VISIBILITY: Record<AuditActionKey, AuditVisibility> = 
   [AUDIT_ACTIONS.DOCUMENT_QUARANTINE]: 'sensitive',
   [AUDIT_ACTIONS.DOCUMENT_UNQUARANTINE]: 'sensitive',
   [AUDIT_ACTIONS.AUDIT_RESTORE]: 'sensitive',
+  [AUDIT_ACTIONS.ROSTER_SYNC]: 'sensitive',
+  [AUDIT_ACTIONS.ROSTER_RANK_RULE_CREATE]: 'sensitive',
+  [AUDIT_ACTIONS.ROSTER_RANK_RULE_UPDATE]: 'sensitive',
+  [AUDIT_ACTIONS.ROSTER_RANK_RULE_DELETE]: 'sensitive',
+  [AUDIT_ACTIONS.BILL_SUBMIT]: 'participant',
+  [AUDIT_ACTIONS.BILL_STAGE_TRANSITION]: 'participant',
+  [AUDIT_ACTIONS.BILL_VERSION_UPLOAD]: 'participant',
+  [AUDIT_ACTIONS.BILL_VOTES_RECORD]: 'participant',
+  [AUDIT_ACTIONS.BILL_TAGS_UPDATE]: 'participant',
+  [AUDIT_ACTIONS.BILL_DIED_IN_SESSION]: 'participant',
+  [AUDIT_ACTIONS.TAG_CREATE]: 'sensitive',
+  [AUDIT_ACTIONS.TAG_UPDATE]: 'sensitive',
+  [AUDIT_ACTIONS.TAG_DELETE]: 'sensitive',
 } as const;

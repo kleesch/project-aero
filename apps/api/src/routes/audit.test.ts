@@ -10,7 +10,11 @@ vi.mock('../db/client.js', () => ({ db: {} }));
 const refs = ((id: number | null | undefined) =>
   id == null
     ? null
-    : ({ robloxUserId: id, username: `user${id}`, displayName: null } satisfies UserRef)) as UserRefLookup;
+    : ({
+        robloxUserId: id,
+        username: `user${id}`,
+        displayName: null,
+      } satisfies UserRef)) as UserRefLookup;
 
 function makeRow(
   overrides: Partial<typeof auditEvents.$inferSelect>,

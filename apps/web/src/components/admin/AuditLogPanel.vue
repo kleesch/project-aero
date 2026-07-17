@@ -86,8 +86,7 @@ function openRestore(event: AuditEventView) {
 }
 
 const restore = useMutation({
-  mutationFn: () =>
-    restoreAuditEvent(restoreDialog.event?.id ?? 0, restoreDialog.reason.trim()),
+  mutationFn: () => restoreAuditEvent(restoreDialog.event?.id ?? 0, restoreDialog.reason.trim()),
   onSuccess: () => {
     restoreDialog.open = false;
     void queryClient.invalidateQueries({ queryKey: ['admin'] });
@@ -190,7 +189,9 @@ function formatTimestamp(iso: string): string {
         <tr v-for="event in data.events" :key="event.id">
           <td class="text-no-wrap">{{ formatTimestamp(event.occurredAt) }}</td>
           <td>{{ formatUserRef(event.actor) }}</td>
-          <td><code>{{ event.actionKey }}</code></td>
+          <td>
+            <code>{{ event.actionKey }}</code>
+          </td>
           <td>
             <code>{{ event.entityType }}#{{ event.entityId }}</code>
           </td>
@@ -223,8 +224,9 @@ function formatTimestamp(iso: string): string {
   <v-dialog v-model="diffDialog.open" max-width="900">
     <v-card v-if="diffDialog.event">
       <v-card-title>
-        <code>{{ diffDialog.event.actionKey }}</code> —
-        {{ diffDialog.event.entityType }}#{{ diffDialog.event.entityId }}
+        <code>{{ diffDialog.event.actionKey }}</code> — {{ diffDialog.event.entityType }}#{{
+          diffDialog.event.entityId
+        }}
       </v-card-title>
       <v-card-subtitle>
         {{ formatUserRef(diffDialog.event.actor) }} ·

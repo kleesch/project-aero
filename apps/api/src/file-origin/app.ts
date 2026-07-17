@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import express from 'express';
 
+import { config } from '../config.js';
 import { db } from '../db/client.js';
 import { documents } from '../db/schema.js';
 import { requestLogger } from '../middleware/request-logger.js';
@@ -26,6 +27,18 @@ export function createFileOriginApp(): express.Express {
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
+  });
+
+  // CSP `sandbox` (below) makes native browser PDF viewers refuse to render,
+  // so the app previews documents by fetching the bytes cross-origin and
+  // rasterizing them with pdf.js (see PdfViewer.vue). That fetch is
+  // credential-less and only ever comes from the app origin — allow exactly
+  // that, on every /files response so the app can also read 404/410 statuses.
+  const appOrigin = new URL(config.APP_BASE_URL).origin;
+  app.use('/files', (_req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', appOrigin);
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Length');
+    next();
   });
 
   app.get('/files/:id', async (req, res, next) => {

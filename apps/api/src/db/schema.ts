@@ -1,3 +1,14 @@
+import {
+  ALL_BILL_STAGES,
+  ALL_BILL_STATUSES,
+  ALL_CHAMBERS,
+  ALL_VOTE_POSITIONS,
+  type BillStage,
+  type BillStatus,
+  type Chamber,
+  type ChamberCode,
+  type VotePosition,
+} from '@aero/shared';
 import { sql } from 'drizzle-orm';
 import {
   bigint,
@@ -7,10 +18,12 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
   uuid,
+  type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 
 /**
@@ -130,9 +143,7 @@ export const auditEvents = pgTable(
   'audit_events',
   {
     id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-    actorUserId: bigint('actor_user_id', { mode: 'number' }).references(
-      () => users.robloxUserId,
-    ),
+    actorUserId: bigint('actor_user_id', { mode: 'number' }).references(() => users.robloxUserId),
     /** Key from the shared AUDIT_ACTIONS registry, e.g. `claims.grant.create`. */
     actionKey: text('action_key').notNull(),
     entityType: text('entity_type').notNull(),
@@ -202,4 +213,204 @@ export const userGroupCache = pgTable(
     fetchedAt: timestamp('fetched_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index('user_group_cache_fetched_at_idx').on(table.fetchedAt)],
+);
+
+// --- Bills (see DESIGN.md — Bills) -----------------------------------------
+
+// Enum values come from the shared registries — the single source of truth —
+// so a vocabulary change is a shared-package change plus a generated migration.
+export const chamberEnum = pgEnum('chamber', ALL_CHAMBERS as [Chamber, ...Chamber[]]);
+export const billChamberEnum = pgEnum('bill_chamber', ['H', 'S']);
+export const billStatusEnum = pgEnum(
+  'bill_status',
+  ALL_BILL_STATUSES as [BillStatus, ...BillStatus[]],
+);
+export const billStageEnum = pgEnum('bill_stage', ALL_BILL_STAGES as [BillStage, ...BillStage[]]);
+export const votePositionEnum = pgEnum(
+  'vote_position',
+  ALL_VOTE_POSITIONS as [VotePosition, ...VotePosition[]],
+);
+
+/**
+ * Chamber membership snapshots synced daily from the Congress group (see
+ * DESIGN.md — Bills). Members need not be platform users (no FK): rosters
+ * exist so votes can be attributed to any member of Congress. Departures are
+ * marked inactive, never deleted, so historical votes keep their context.
+ */
+export const congressRosters = pgTable(
+  'congress_rosters',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    chamber: chamberEnum('chamber').notNull(),
+    robloxUserId: bigint('roblox_user_id', { mode: 'number' }).notNull(),
+    /** Cached from the group sync; refreshed every run. */
+    usernameSnapshot: text('username_snapshot'),
+    rank: integer('rank').notNull(),
+    active: boolean('active').notNull().default(true),
+    firstSeenAt: timestamp('first_seen_at', { withTimezone: true }).notNull().defaultNow(),
+    lastConfirmedAt: timestamp('last_confirmed_at', { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('congress_rosters_chamber_member_unique').on(table.chamber, table.robloxUserId),
+    index('congress_rosters_chamber_active_idx').on(table.chamber, table.active),
+  ],
+);
+
+/**
+ * Admin-configurable mapping of Congress-group ranks to chambers, mirroring
+ * the group-claim-mapping shape: a member belongs to a chamber when any of
+ * its rules match their rank. With no rules a sync classifies nobody.
+ */
+export const rosterRankRules = pgTable('roster_rank_rules', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  chamber: chamberEnum('chamber').notNull(),
+  comparison: rankComparison('comparison').notNull(),
+  rankValue: integer('rank_value').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * The identity is `(chamber, session, sequence)` — the display id (HB8401)
+ * is derived, never stored. Sequence is assigned transactionally from
+ * `bill_sequence_counters`, so the unique index can only ever be a backstop.
+ */
+export const bills = pgTable(
+  'bills',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    chamber: billChamberEnum('chamber').$type<ChamberCode>().notNull(),
+    session: integer('session').notNull(),
+    /** 1–99; a session never produces more than 99 bills per chamber. */
+    sequence: integer('sequence').notNull(),
+    title: text('title').notNull(),
+    status: billStatusEnum('status').notNull().default('IN_COMMITTEE'),
+    submittedBy: bigint('submitted_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('bills_chamber_session_sequence_unique').on(
+      table.chamber,
+      table.session,
+      table.sequence,
+    ),
+    index('bills_status_idx').on(table.status),
+    index('bills_session_idx').on(table.session),
+    index('bills_submitted_by_idx').on(table.submittedBy),
+  ],
+);
+
+/**
+ * Per-(chamber, session) sequence source: an upsert increments and returns
+ * the next value under the counter row's lock, serializing concurrent
+ * submissions without table locks.
+ */
+export const billSequenceCounters = pgTable(
+  'bill_sequence_counters',
+  {
+    chamber: billChamberEnum('chamber').$type<ChamberCode>().notNull(),
+    session: integer('session').notNull(),
+    lastSequence: integer('last_sequence').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.chamber, table.session] })],
+);
+
+/** Every PDF revision is a new row; nothing is overwritten (DESIGN.md — Bills). */
+export const billVersions = pgTable(
+  'bill_versions',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    billId: integer('bill_id')
+      .notNull()
+      .references(() => bills.id),
+    versionNo: integer('version_no').notNull(),
+    documentId: uuid('document_id')
+      .notNull()
+      .references(() => documents.id),
+    uploadedBy: bigint('uploaded_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('bill_versions_bill_version_unique').on(table.billId, table.versionNo)],
+);
+
+/**
+ * Append-only stage pipeline history: one row per transition, `outcome` being
+ * the status the transition produced. `decided_by` is null when the system
+ * decided (session rollover).
+ */
+export const billStageEvents = pgTable(
+  'bill_stage_events',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    billId: integer('bill_id')
+      .notNull()
+      .references(() => bills.id),
+    stage: billStageEnum('stage').notNull(),
+    outcome: billStatusEnum('outcome').notNull(),
+    decidedBy: bigint('decided_by', { mode: 'number' }).references(() => users.robloxUserId),
+    decidedAt: timestamp('decided_at', { withTimezone: true }).notNull().defaultNow(),
+    notes: text('notes'),
+  },
+  (table) => [index('bill_stage_events_bill_id_idx').on(table.billId)],
+);
+
+/**
+ * Per-member votes on a stage event. Corrections never mutate: a new row is
+ * inserted and the old one points at it via `superseded_by`, so tallies stay
+ * auditable end to end. Live tallies count only non-superseded rows. Members
+ * are attributed by ROBLOX id without a users FK — they need not be platform
+ * users. Write paths serialize on the stage-event row lock.
+ */
+export const billVotes = pgTable(
+  'bill_votes',
+  {
+    id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    stageEventId: integer('stage_event_id')
+      .notNull()
+      .references(() => billStageEvents.id),
+    robloxUserId: bigint('roblox_user_id', { mode: 'number' }).notNull(),
+    position: votePositionEnum('position').notNull(),
+    recordedBy: bigint('recorded_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),
+    supersededBy: bigint('superseded_by', { mode: 'number' }).references(
+      (): AnyPgColumn => billVotes.id,
+    ),
+  },
+  (table) => [
+    index('bill_votes_stage_event_id_idx').on(table.stageEventId),
+    index('bill_votes_live_idx')
+      .on(table.stageEventId, table.robloxUserId)
+      .where(sql`${table.supersededBy} IS NULL`),
+  ],
+);
+
+/** Tag vocabulary — managed by `tags:manage`, applied by `bill:submit`. */
+export const tags = pgTable('tags', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  name: text('name').notNull().unique(),
+  description: text('description'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const billTags = pgTable(
+  'bill_tags',
+  {
+    billId: integer('bill_id')
+      .notNull()
+      .references(() => bills.id),
+    tagId: integer('tag_id')
+      .notNull()
+      .references(() => tags.id),
+  },
+  (table) => [primaryKey({ columns: [table.billId, table.tagId] })],
 );

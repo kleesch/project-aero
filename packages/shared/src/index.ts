@@ -7,3 +7,5 @@ export * from './schemas/index.js';
 export * from './api/claims.js';
 export * from './api/audit.js';
 export * from './api/documents.js';
+export * from './api/bills.js';
+export * from './api/rosters.js';

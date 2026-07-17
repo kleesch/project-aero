@@ -4,23 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types.">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DESIGN.md" beforeDir="false" afterPath="$PROJECT_DIR$/DESIGN.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/db/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/db/client.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/file-origin/app.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/file-origin/app.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/file-origin/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/file-origin/app.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/jobs/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/jobs/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/api/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/routes/admin-documents.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/admin-documents.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/routes/audit.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/audit.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/services/audit-restore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/services/audit-restore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/services/documents.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/services/documents.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/components/PdfViewer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/PdfViewer.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/AuditLogPanel.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/AuditLogPanel.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/DocumentsAdminPanel.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/DocumentsAdminPanel.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/router/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/infra/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/infra/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/views/BillsView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/BillsView.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/audit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/audit.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/bills.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/bills.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/bills.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/bills.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/congress.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/congress.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/congress.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/congress.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/shared/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/schemas/audit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/schemas/audit.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,23 +68,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.2800994273228565" />
-      <entry key="MS500" value="4.584438009877964" />
-      <entry key="S2" value="10.465926304876346" />
-      <entry key="S5" value="12.920704919555034" />
-      <entry key="S10" value="13.909468512368674" />
-      <entry key="S30" value="14.62448469505328" />
-      <entry key="S60" value="14.810695814919695" />
-      <entry key="M2" value="14.904957737106669" />
-      <entry key="M5" value="14.96188899723714" />
-      <entry key="M10" value="14.980928777458022" />
-      <entry key="M15" value="14.987282355209931" />
-      <entry key="M30" value="14.993639428680627" />
-      <entry key="H1" value="14.996819877728758" />
-      <entry key="H2" value="15.030504320186392" />
-      <entry key="H4" value="22.468571034624723" />
-      <entry key="D1" value="718.267170346151" />
-      <entry key="W1" value="1548.2867505896331" />
+      <entry key="MS100" value="2.393144586274347" />
+      <entry key="MS500" value="4.124184111062069" />
+      <entry key="S2" value="4.75284775419053" />
+      <entry key="S5" value="4.898605733279904" />
+      <entry key="S10" value="4.9488692766037445" />
+      <entry key="S30" value="4.982859022332505" />
+      <entry key="S60" value="4.991587730661161" />
+      <entry key="M2" value="5.00876240153754" />
+      <entry key="M5" value="5.17461517093137" />
+      <entry key="M10" value="5.419061665942378" />
+      <entry key="M15" value="5.560188861068291" />
+      <entry key="M30" value="5.74855382164751" />
+      <entry key="H1" value="5.865212518107123" />
+      <entry key="H2" value="5.931817811526813" />
+      <entry key="H4" value="6.2020992983707846" />
+      <entry key="D1" value="340.5173492644455" />
+      <entry key="W1" value="1394.790114140566" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -80,35 +94,35 @@
       <entry key="S10" value="0.0" />
       <entry key="S30" value="0.0" />
       <entry key="S60" value="0.0" />
-      <entry key="M2" value="2.0894291388497993E-276" />
-      <entry key="M5" value="5.769508684506875E-111" />
-      <entry key="M10" value="9.376686081489939E-56" />
-      <entry key="M15" value="2.5014744007006168E-37" />
-      <entry key="M30" value="6.925797249032535E-19" />
-      <entry key="H1" value="1.1705142047376532E-9" />
-      <entry key="H2" value="4.831748446264658E-5" />
-      <entry key="H4" value="0.009826911316034309" />
-      <entry key="D1" value="0.8245942562321573" />
-      <entry key="W1" value="1.7622175776051103" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="1.0261541585389966E-206" />
+      <entry key="M10" value="1.250507399007892E-103" />
+      <entry key="M15" value="3.0307770420444193E-69" />
+      <entry key="M30" value="7.623400504488628E-35" />
+      <entry key="H1" value="1.2280503407155317E-17" />
+      <entry key="H2" value="4.949075240599822E-9" />
+      <entry key="H4" value="9.945506535402883E-5" />
+      <entry key="D1" value="0.38350875587822364" />
+      <entry key="W1" value="1.5796632905946209" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.2056180719078546" />
-      <entry key="MS500" value="4.546055729516377" />
-      <entry key="S2" value="10.444811229794578" />
-      <entry key="S5" value="12.910305536401493" />
-      <entry key="S10" value="13.90387414078414" />
-      <entry key="S30" value="14.622524639773347" />
-      <entry key="S60" value="14.80970337417072" />
-      <entry key="M2" value="14.904458374284722" />
-      <entry key="M5" value="14.961688492851419" />
-      <entry key="M10" value="14.98082839829753" />
-      <entry key="M15" value="14.987215407523019" />
-      <entry key="M30" value="14.993605940705985" />
-      <entry key="H1" value="14.996803131376698" />
-      <entry key="H2" value="15.030544239394391" />
-      <entry key="H4" value="22.47839113353089" />
-      <entry key="D1" value="719.0917241852422" />
-      <entry key="W1" value="1550.0489557705646" />
+      <entry key="MS100" value="2.32834299795824" />
+      <entry key="MS500" value="4.100610668962342" />
+      <entry key="S2" value="4.745962459211177" />
+      <entry key="S5" value="4.895759034535166" />
+      <entry key="S10" value="4.947429941196738" />
+      <entry key="S30" value="4.982375638265127" />
+      <entry key="S60" value="4.991345576688035" />
+      <entry key="M2" value="5.008640913046542" />
+      <entry key="M5" value="5.174565039205411" />
+      <entry key="M10" value="5.419035469908569" />
+      <entry key="M15" value="5.56017096215045" />
+      <entry key="M30" value="5.7485445819790435" />
+      <entry key="H1" value="5.865207808410006" />
+      <entry key="H2" value="5.931815435697249" />
+      <entry key="H4" value="6.20219748548813" />
+      <entry key="D1" value="340.9008390037386" />
+      <entry key="W1" value="1396.3697662849154" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -195,7 +209,7 @@
       <updated>1783430732170</updated>
       <workItem from="1783430733175" duration="8487000" />
       <workItem from="1783992727456" duration="3567000" />
-      <workItem from="1784053462944" duration="10521000" />
+      <workItem from="1784053462944" duration="16233000" />
     </task>
     <task id="LOCAL-00001" summary="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
       <option name="closed" value="true" />
@@ -245,7 +259,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784059080744</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Phase 3">
+      <option name="closed" value="true" />
+      <created>1784166029835</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1784166029835</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -259,6 +281,7 @@
     <MESSAGE value="Phase 2.. But all of it this time xd" />
     <MESSAGE value="Phase 2: Complete user hydration logic for audit and claims systems." />
     <MESSAGE value="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types." />
-    <option name="LAST_COMMIT_MESSAGE" value="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types." />
+    <MESSAGE value="Phase 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Phase 3" />
   </component>
 </project>

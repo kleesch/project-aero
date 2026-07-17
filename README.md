@@ -112,6 +112,34 @@ rejected by a database trigger). Holders of `audit:view` can browse and filter t
 `/admin` → Audit log, inspect before/after snapshots, and — with the `admin` claim — restore an
 opted-in record from its `before` snapshot.
 
+## Bill tracking
+
+Bills (see PROJECT.md — Bill Tracking & Signing) live at `/bills`: a public list (filter by
+session, chamber, status, tags; search by display id or title) and a public detail page showing
+the stage pipeline, per-member votes with live tallies, tags, and every PDF version in the
+sandboxed viewer. Anonymous users see everything; mutations are claim-gated:
+
+- **Submission** (`bill:submit`) — the origin chamber comes from the submitter's roster
+  membership; the identifier (`HB8401` = House bill, session 84, sequence 01) is assigned
+  transactionally from a per-`(chamber, session)` counter, capped at 99 bills per chamber per
+  session. New PDF versions between stages use the same claim.
+- **Stage outcomes** are declared manually (recorded tallies are documentation, not the trigger):
+  committee and origin floor need the origin chamber's `bill:vote-update:house|senate` claim, the
+  other floor needs the other chamber's, sign/veto needs `bill:sign`, and the veto override
+  returns to the origin chamber's claim.
+- **Votes** are bulk-entered per stage event against the chamber roster (yea/nay/abstain/absent);
+  members missing from the roster need explicit confirmation. Corrections supersede rather than
+  mutate, so tallies stay auditable; admins may correct any tally.
+
+The **Congress session advances by calendar month** (July 2026 = session 84, evaluated in US
+Eastern time). A daily 00:05 ET job — plus a lazy check on any bill mutation — marks still-active
+bills from prior sessions `DIED_IN_SESSION`.
+
+**Rosters** sync daily from the Congress group (2673501): admins map group ranks to chambers at
+`/admin` → Rosters (with no rules the sync classifies nobody), and `roster:resync` holders can
+force an immediate sync there. The **tag vocabulary** is managed at `/admin` → Tags
+(`tags:manage`); anyone with `bill:submit` can tag bills.
+
 ## Development commands
 
 All from the repository root:
@@ -119,9 +147,19 @@ All from the repository root:
 ```sh
 npm run lint        # ESLint (flat config), zero-warning budget
 npm run typecheck   # tsc project references + vue-tsc for the SPA
-npm test            # Vitest (packages/shared + apps/api)
+npm test            # Vitest (packages/shared + apps/api), hermetic — no database needed
 npm run build       # all workspaces
 npm run format      # Prettier over the whole repo
+```
+
+Integration tests (real Postgres; covers concurrent bill submission, per-chamber claim
+enforcement, vote supersession, session rollover) are gated on `TEST_DATABASE_URL` and skipped
+without it. With the compose Postgres running they work out of the box — the script defaults the
+URL to a disposable `aero_test` database on the compose instance, creating it if missing:
+
+```sh
+docker compose up -d postgres
+npm run test:integration --workspace @aero/api
 ```
 
 Database migrations live in `apps/api/drizzle/` and are applied automatically when the API boots.

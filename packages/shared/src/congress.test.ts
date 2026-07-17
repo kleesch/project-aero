@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatBillId, sessionForDate } from './congress.js';
+import { formatBillId, otherChamber, parseBillId, sessionForDate } from './congress.js';
 
 describe('sessionForDate', () => {
   it('anchors July 2026 to session 84', () => {
@@ -44,6 +44,14 @@ describe('formatBillId', () => {
     expect(formatBillId('S', 100, 5)).toBe('SB10005');
   });
 
+  it('matches the PROJECT.md spec examples exactly', () => {
+    // First House bill of the 80th Congress, second Senate bill of the 30th,
+    // 22nd House bill of the 100th.
+    expect(formatBillId('H', 80, 1)).toBe('HB8001');
+    expect(formatBillId('S', 30, 2)).toBe('SB3002');
+    expect(formatBillId('H', 100, 22)).toBe('HB10022');
+  });
+
   it('rejects sequences outside 1–99', () => {
     expect(() => formatBillId('H', 84, 0)).toThrow(RangeError);
     expect(() => formatBillId('H', 84, 100)).toThrow(RangeError);
@@ -57,5 +65,37 @@ describe('formatBillId', () => {
 
   it('rejects unknown chamber codes', () => {
     expect(() => formatBillId('X' as never, 84, 1)).toThrow(RangeError);
+  });
+});
+
+describe('parseBillId', () => {
+  it('inverts formatBillId on the spec examples', () => {
+    expect(parseBillId('HB8001')).toEqual({ chamber: 'H', session: 80, sequence: 1 });
+    expect(parseBillId('SB3002')).toEqual({ chamber: 'S', session: 30, sequence: 2 });
+    expect(parseBillId('HB10022')).toEqual({ chamber: 'H', session: 100, sequence: 22 });
+  });
+
+  it('always reads the final two digits as the sequence', () => {
+    expect(parseBillId('HB9999')).toEqual({ chamber: 'H', session: 99, sequence: 99 });
+    expect(parseBillId('SB10005')).toEqual({ chamber: 'S', session: 100, sequence: 5 });
+  });
+
+  it('is case-insensitive and trims whitespace', () => {
+    expect(parseBillId(' hb8401 ')).toEqual({ chamber: 'H', session: 84, sequence: 1 });
+  });
+
+  it('rejects malformed ids', () => {
+    expect(parseBillId('XB8401')).toBeNull();
+    expect(parseBillId('HB84')).toBeNull(); // no room for a session digit
+    expect(parseBillId('HB8400')).toBeNull(); // sequence 0 does not exist
+    expect(parseBillId('HB84.1')).toBeNull();
+    expect(parseBillId('a bill')).toBeNull();
+  });
+});
+
+describe('otherChamber', () => {
+  it('swaps the chambers', () => {
+    expect(otherChamber('house')).toBe('senate');
+    expect(otherChamber('senate')).toBe('house');
   });
 });

@@ -191,7 +191,9 @@ function formatTimestamp(iso: string): string {
   <v-dialog v-model="quarantineDialog.open" max-width="480">
     <v-card
       v-if="quarantineDialog.document"
-      :title="quarantineDialog.document.quarantinedAt ? 'Un-quarantine document' : 'Quarantine document'"
+      :title="
+        quarantineDialog.document.quarantinedAt ? 'Un-quarantine document' : 'Quarantine document'
+      "
     >
       <v-card-text>
         <p class="mb-3">

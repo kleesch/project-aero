@@ -152,9 +152,11 @@ User-submitted PDFs are treated as hostile. The pipeline, shared by bills and ju
 2. The file origin is a thin streaming proxy (a separate Express entry point in `apps/api`, bound to its own hostname/port) that fetches from R2 and sets on every response:
    - `Content-Security-Policy: sandbox` (no scripts, no top-level navigation, opaque origin)
    - `Content-Type: application/pdf` + `X-Content-Type-Options: nosniff`
-   - `Content-Disposition: inline; filename="<sanitized>.pdf"` (inline so browsers can render; the sandbox + separate origin make inline safe)
+   - `Content-Disposition: inline; filename="<sanitized>.pdf"`
    - `Cross-Origin-Opener-Policy: same-origin`, `Referrer-Policy: no-referrer`
-3. Quarantine: setting `documents.quarantined_at` (admin action) makes the proxy return 410 immediately, platform-wide, without touching the bill/ruling records.
+   - `Access-Control-Allow-Origin: <app origin>` (credential-less CORS so the app can fetch the raw bytes for rendering — see below)
+3. In-app preview never uses the browser's native PDF viewer — native viewers refuse to run in a sandboxed context, so `CSP: sandbox` rules them out by design. Instead the app fetches the bytes cross-origin and rasterizes each page to a canvas with pdf.js (`PdfViewer.vue`): nothing embedded in a PDF ever executes. Navigating to a file URL directly downloads the file rather than rendering it.
+4. Quarantine: setting `documents.quarantined_at` (admin action) makes the proxy return 410 immediately, platform-wide, without touching the bill/ruling records.
 
 Locally, MinIO substitutes for R2 behind the same S3 client; the proxy runs on a second localhost port to simulate the separate origin.
 

@@ -5,6 +5,11 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: () => import('../views/HomeView.vue') },
     { path: '/bills', name: 'bills', component: () => import('../views/BillsView.vue') },
+    {
+      path: '/bills/:ref',
+      name: 'bill-detail',
+      component: () => import('../views/BillDetailView.vue'),
+    },
     { path: '/courts', name: 'courts', component: () => import('../views/CourtsView.vue') },
     {
       path: '/businesses',
