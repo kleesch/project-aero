@@ -5,6 +5,7 @@ import { computed, ref } from 'vue';
 import AuditLogPanel from '../components/admin/AuditLogPanel.vue';
 import ClaimsAdminPanel from '../components/admin/ClaimsAdminPanel.vue';
 import DocumentsAdminPanel from '../components/admin/DocumentsAdminPanel.vue';
+import OutcomesAdminPanel from '../components/admin/OutcomesAdminPanel.vue';
 import RostersAdminPanel from '../components/admin/RostersAdminPanel.vue';
 import TagsAdminPanel from '../components/admin/TagsAdminPanel.vue';
 import UserClaimsLookup from '../components/admin/UserClaimsLookup.vue';
@@ -25,6 +26,7 @@ const tabs = computed(() =>
       show: hasClaim(CLAIM_KEYS.ADMIN) || hasClaim(CLAIM_KEYS.ROSTER_RESYNC),
     },
     { value: 'tags', label: 'Tags', show: hasClaim(CLAIM_KEYS.TAGS_MANAGE) },
+    { value: 'outcomes', label: 'Ruling outcomes', show: hasClaim(CLAIM_KEYS.TAGS_MANAGE) },
   ].filter((tab) => tab.show),
 );
 
@@ -65,6 +67,9 @@ const tab = ref<string | null>(null);
       </v-tabs-window-item>
       <v-tabs-window-item value="tags">
         <TagsAdminPanel />
+      </v-tabs-window-item>
+      <v-tabs-window-item value="outcomes">
+        <OutcomesAdminPanel />
       </v-tabs-window-item>
     </v-tabs-window>
   </template>

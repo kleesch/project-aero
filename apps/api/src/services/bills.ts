@@ -36,7 +36,7 @@ import {
   tags,
 } from '../db/schema.js';
 import { audit } from './audit.js';
-import { toDocumentView } from './documents.js';
+import { toDocumentView, validateAttachableDocument } from './documents.js';
 import { loadUserRefs, type UserRefLookup } from './user-refs.js';
 
 /**
@@ -214,13 +214,7 @@ export async function validateBillDocument(
   documentId: string,
   actorUserId: number,
 ): Promise<string | null> {
-  const [document] = await db.select().from(documents).where(eq(documents.id, documentId));
-  if (!document) return 'Unknown document id; upload the PDF first.';
-  if (document.uploaderUserId !== actorUserId) {
-    return 'The referenced document was uploaded by someone else.';
-  }
-  if (document.quarantinedAt !== null) return 'The referenced document is quarantined.';
-  return null;
+  return validateAttachableDocument(documentId, actorUserId);
 }
 
 export function emptyTally(): VoteTally {

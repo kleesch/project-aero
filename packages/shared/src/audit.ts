@@ -27,6 +27,14 @@ export const AUDIT_ACTIONS = {
   TAG_CREATE: 'tags.create',
   TAG_UPDATE: 'tags.update',
   TAG_DELETE: 'tags.delete',
+  RULING_SUBMIT: 'rulings.submit',
+  RULING_APPEAL_SUBMIT: 'rulings.appeal.submit',
+  RULING_EXPUNGE: 'rulings.expunge',
+  RULING_PARDON: 'rulings.pardon',
+  RULING_OUTCOME_CREATE: 'rulings.outcome.create',
+  RULING_OUTCOME_UPDATE: 'rulings.outcome.update',
+  RULING_OUTCOME_DELETE: 'rulings.outcome.delete',
+  USER_STUB_CREATE: 'users.stub.create',
 } as const;
 
 export type AuditActionKey = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -49,6 +57,9 @@ export const AUDIT_ENTITIES = {
   ROSTER_RANK_RULE: 'roster_rank_rule',
   BILL: 'bill',
   TAG: 'tag',
+  RULING: 'ruling',
+  RULING_OUTCOME: 'ruling_outcome',
+  USER: 'user',
 } as const;
 
 export type AuditEntityType = (typeof AUDIT_ENTITIES)[keyof typeof AUDIT_ENTITIES];
@@ -88,4 +99,14 @@ export const AUDIT_ACTION_VISIBILITY: Record<AuditActionKey, AuditVisibility> = 
   [AUDIT_ACTIONS.TAG_CREATE]: 'sensitive',
   [AUDIT_ACTIONS.TAG_UPDATE]: 'sensitive',
   [AUDIT_ACTIONS.TAG_DELETE]: 'sensitive',
+  [AUDIT_ACTIONS.RULING_SUBMIT]: 'participant',
+  [AUDIT_ACTIONS.RULING_APPEAL_SUBMIT]: 'participant',
+  // Expungement/pardon hide a record from the public; the justification and
+  // actor stay in the sensitive tier alongside other moderation actions.
+  [AUDIT_ACTIONS.RULING_EXPUNGE]: 'sensitive',
+  [AUDIT_ACTIONS.RULING_PARDON]: 'sensitive',
+  [AUDIT_ACTIONS.RULING_OUTCOME_CREATE]: 'sensitive',
+  [AUDIT_ACTIONS.RULING_OUTCOME_UPDATE]: 'sensitive',
+  [AUDIT_ACTIONS.RULING_OUTCOME_DELETE]: 'sensitive',
+  [AUDIT_ACTIONS.USER_STUB_CREATE]: 'sensitive',
 } as const;

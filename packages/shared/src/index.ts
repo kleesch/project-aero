@@ -1,6 +1,7 @@
 export * from './claims.js';
 export * from './bills.js';
 export * from './congress.js';
+export * from './courts.js';
 export * from './users.js';
 export * from './audit.js';
 export * from './schemas/index.js';
@@ -8,4 +9,5 @@ export * from './api/claims.js';
 export * from './api/audit.js';
 export * from './api/documents.js';
 export * from './api/bills.js';
+export * from './api/courts.js';
 export * from './api/rosters.js';

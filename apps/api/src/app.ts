@@ -10,10 +10,14 @@ import { adminRostersRouter } from './routes/admin-rosters.js';
 import { adminAuditRouter, auditRouter } from './routes/audit.js';
 import { authRouter } from './routes/auth.js';
 import { billsRouter } from './routes/bills.js';
+import { businessesRouter } from './routes/businesses.js';
 import { documentsRouter } from './routes/documents.js';
 import { healthRouter } from './routes/health.js';
 import { meRouter } from './routes/me.js';
+import { profilesRouter } from './routes/profiles.js';
 import { rostersRouter } from './routes/rosters.js';
+import { rulingOutcomesRouter } from './routes/ruling-outcomes.js';
+import { rulingsRouter } from './routes/rulings.js';
 import { tagsRouter } from './routes/tags.js';
 
 export function createApp(): express.Express {
@@ -41,6 +45,10 @@ export function createApp(): express.Express {
   app.use('/api/rosters', rostersRouter);
   app.use('/api/bills', billsRouter);
   app.use('/api/tags', tagsRouter);
+  app.use('/api/rulings', rulingsRouter);
+  app.use('/api/ruling-outcomes', rulingOutcomesRouter);
+  app.use('/api/users', profilesRouter);
+  app.use('/api/businesses', businessesRouter);
 
   return app;
 }

@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 
 import { AUDIT_ACTIONS, AUDIT_ENTITIES, type DocumentView } from '@aero/shared';
+import { eq } from 'drizzle-orm';
 
 import { config } from '../config.js';
 import { db } from '../db/client.js';
@@ -103,6 +104,24 @@ export async function storePdfDocument(
     });
     throw error;
   }
+}
+
+/**
+ * Guards attaching a document to a record (bill version, judgment, appeal
+ * verdict) against ids that don't exist, PDFs someone else uploaded, or
+ * quarantined files. Returns a user-facing rejection message, or null.
+ */
+export async function validateAttachableDocument(
+  documentId: string,
+  actorUserId: number,
+): Promise<string | null> {
+  const [document] = await db.select().from(documents).where(eq(documents.id, documentId));
+  if (!document) return 'Unknown document id; upload the PDF first.';
+  if (document.uploaderUserId !== actorUserId) {
+    return 'The referenced document was uploaded by someone else.';
+  }
+  if (document.quarantinedAt !== null) return 'The referenced document is quarantined.';
+  return null;
 }
 
 /** Separate-origin URL the browser loads a document from. */

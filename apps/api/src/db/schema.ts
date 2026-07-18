@@ -2,17 +2,25 @@ import {
   ALL_BILL_STAGES,
   ALL_BILL_STATUSES,
   ALL_CHAMBERS,
+  ALL_RULING_PARTY_SIDES,
+  ALL_RULING_PARTY_TYPES,
+  ALL_RULING_STATUSES,
   ALL_VOTE_POSITIONS,
   type BillStage,
   type BillStatus,
   type Chamber,
   type ChamberCode,
+  type RulingPartySide,
+  type RulingPartyType,
+  type RulingStatus,
   type VotePosition,
 } from '@aero/shared';
 import { sql } from 'drizzle-orm';
 import {
   bigint,
   boolean,
+  check,
+  date,
   index,
   integer,
   jsonb,
@@ -413,4 +421,170 @@ export const billTags = pgTable(
       .references(() => tags.id),
   },
   (table) => [primaryKey({ columns: [table.billId, table.tagId] })],
+);
+
+// --- Businesses (minimal, ahead of phase 06) --------------------------------
+
+/**
+ * Minimal business registry per DESIGN.md — Business, landed in phase 05 so
+ * ruling parties can reference real business rows (the breakdown's migration
+ * coordination note). Phase 06 adds ownership transfers, licenses, and the
+ * registration endpoints/UI on top of this table.
+ */
+export const businesses = pgTable(
+  'businesses',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    name: text('name').notNull(),
+    status: text('status').notNull().default('active'),
+    /** Exactly one owner (see DESIGN.md — Business). */
+    ownerUserId: bigint('owner_user_id', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    /** The `business:register` holder who created the entry. */
+    createdBy: bigint('created_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('businesses_name_idx').on(table.name),
+    index('businesses_owner_user_id_idx').on(table.ownerUserId),
+  ],
+);
+
+// --- Judicial (see DESIGN.md — Judicial) ------------------------------------
+
+export const rulingStatusEnum = pgEnum(
+  'ruling_status',
+  ALL_RULING_STATUSES as [RulingStatus, ...RulingStatus[]],
+);
+export const rulingPartySideEnum = pgEnum(
+  'ruling_party_side',
+  ALL_RULING_PARTY_SIDES as [RulingPartySide, ...RulingPartySide[]],
+);
+export const rulingPartyTypeEnum = pgEnum(
+  'ruling_party_type',
+  ALL_RULING_PARTY_TYPES as [RulingPartyType, ...RulingPartyType[]],
+);
+
+/**
+ * Final judgments entered by judges. Expungement and pardon are status
+ * changes only — the row, its parties, and its audit trail persist; public
+ * queries simply exclude non-active statuses (see the visibility rules in
+ * packages/shared/src/courts.ts).
+ */
+export const rulings = pgTable(
+  'rulings',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    /** Calendar date of the ruling, as entered by the judge. */
+    rulingDate: date('ruling_date').notNull(),
+    status: rulingStatusEnum('status').notNull().default('active'),
+    enteredBy: bigint('entered_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    /** Judgment PDF via the shared documents pipeline. */
+    documentId: uuid('document_id')
+      .notNull()
+      .references(() => documents.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('rulings_status_idx').on(table.status),
+    index('rulings_ruling_date_idx').on(table.rulingDate),
+    index('rulings_entered_by_idx').on(table.enteredBy),
+  ],
+);
+
+/**
+ * Parties on each side of a ruling. The reference column matches the party
+ * type (database CHECK): user parties point at a users row (stubs are created
+ * on demand for people who never logged in), business parties at a
+ * businesses row, and the single fixed government entity carries no
+ * reference at all.
+ */
+export const rulingParties = pgTable(
+  'ruling_parties',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    rulingId: integer('ruling_id')
+      .notNull()
+      .references(() => rulings.id),
+    side: rulingPartySideEnum('side').notNull(),
+    partyType: rulingPartyTypeEnum('party_type').notNull(),
+    robloxUserId: bigint('roblox_user_id', { mode: 'number' }).references(() => users.robloxUserId),
+    businessId: integer('business_id').references(() => businesses.id),
+  },
+  (table) => [
+    index('ruling_parties_ruling_id_idx').on(table.rulingId),
+    index('ruling_parties_roblox_user_id_idx').on(table.robloxUserId),
+    index('ruling_parties_business_id_idx').on(table.businessId),
+    check(
+      'ruling_parties_ref_matches_type',
+      sql`(${table.partyType} = 'user' AND ${table.robloxUserId} IS NOT NULL AND ${table.businessId} IS NULL)
+        OR (${table.partyType} = 'business' AND ${table.businessId} IS NOT NULL AND ${table.robloxUserId} IS NULL)
+        OR (${table.partyType} = 'government' AND ${table.robloxUserId} IS NULL AND ${table.businessId} IS NULL)`,
+    ),
+  ],
+);
+
+/** Outcome vocabulary (`guilty`, `not guilty`, …) — managed like tags. */
+export const rulingOutcomes = pgTable('ruling_outcomes', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  name: text('name').notNull().unique(),
+  description: text('description'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const rulingOutcomeLinks = pgTable(
+  'ruling_outcome_links',
+  {
+    rulingId: integer('ruling_id')
+      .notNull()
+      .references(() => rulings.id),
+    outcomeId: integer('outcome_id')
+      .notNull()
+      .references(() => rulingOutcomes.id),
+  },
+  (table) => [primaryKey({ columns: [table.rulingId, table.outcomeId] })],
+);
+
+/**
+ * Supreme Court appeal verdicts — at most one per ruling (unique index).
+ * The appeal never replaces the original: both render side by side.
+ */
+export const appeals = pgTable(
+  'appeals',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    rulingId: integer('ruling_id')
+      .notNull()
+      .references(() => rulings.id),
+    /** Verdict PDF via the shared documents pipeline. */
+    documentId: uuid('document_id')
+      .notNull()
+      .references(() => documents.id),
+    enteredBy: bigint('entered_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    enteredAt: timestamp('entered_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('appeals_ruling_id_unique').on(table.rulingId)],
+);
+
+export const appealOutcomeLinks = pgTable(
+  'appeal_outcome_links',
+  {
+    appealId: integer('appeal_id')
+      .notNull()
+      .references(() => appeals.id),
+    outcomeId: integer('outcome_id')
+      .notNull()
+      .references(() => rulingOutcomes.id),
+  },
+  (table) => [primaryKey({ columns: [table.appealId, table.outcomeId] })],
 );

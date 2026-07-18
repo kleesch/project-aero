@@ -43,6 +43,13 @@
       "when": 1784258795530,
       "tag": "0005_bill-tracking",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784406928341,
+      "tag": "0006_judicial-records",
+      "breakpoints": true
     }
   ]
 }
