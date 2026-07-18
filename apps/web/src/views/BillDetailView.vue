@@ -23,11 +23,11 @@ import { useClaims } from '../composables/useClaims';
 import {
   CHAMBER_LABELS,
   formatDate,
-  OUTCOME_LABELS,
+  outcomeLabel,
   POSITION_COLORS,
   POSITION_LABELS,
-  STAGE_LABELS,
-  STATUS_META,
+  stageLabel,
+  statusMeta,
 } from '../lib/bills';
 
 const route = useRoute();
@@ -89,12 +89,7 @@ function canRecordVotes(event: BillStageEventView): boolean {
 const currentStage = computed(() => {
   if (!bill.value) return null;
   const stage = STAGE_FOR_STATUS[bill.value.status];
-  if (!stage) return null;
-  const chamber = chamberForBillStage(stage, bill.value.chamber);
-  return {
-    label: STAGE_LABELS[stage],
-    chamber: chamber ? CHAMBER_LABELS[chamber] : 'The President',
-  };
+  return stage ? stageLabel(stage, bill.value.chamber) : null;
 });
 
 // --- Dialogs ------------------------------------------------------------------
@@ -180,8 +175,8 @@ const shownVersion = computed(() => {
   <template v-else-if="bill">
     <div class="d-flex align-center flex-wrap mb-1">
       <h1 class="text-h5 mr-3">{{ bill.displayId }}</h1>
-      <v-chip :color="STATUS_META[bill.status].color" variant="tonal" class="mr-2">
-        {{ STATUS_META[bill.status].label }}
+      <v-chip :color="statusMeta(bill.status, bill.chamber).color" variant="tonal" class="mr-2">
+        {{ statusMeta(bill.status, bill.chamber).label }}
       </v-chip>
       <v-chip v-for="tag in bill.tags" :key="tag.id" size="small" variant="outlined" class="mr-1">
         {{ tag.name }}
@@ -229,7 +224,7 @@ const shownVersion = computed(() => {
     </p>
 
     <v-alert v-if="currentStage" type="info" variant="tonal" density="compact" class="mb-4">
-      Awaiting outcome: <strong>{{ currentStage.label }}</strong> ({{ currentStage.chamber }}).
+      Awaiting outcome: <strong>{{ currentStage }}</strong>.
     </v-alert>
 
     <v-row>
@@ -243,13 +238,17 @@ const shownVersion = computed(() => {
               <v-timeline-item
                 v-for="event in bill.stageEvents"
                 :key="event.id"
-                :dot-color="STATUS_META[event.outcome].color"
+                :dot-color="statusMeta(event.outcome, bill.chamber).color"
                 size="small"
               >
                 <div class="d-flex align-center flex-wrap">
-                  <strong class="mr-2">{{ STAGE_LABELS[event.stage] }}</strong>
-                  <v-chip size="x-small" :color="STATUS_META[event.outcome].color" variant="tonal">
-                    {{ OUTCOME_LABELS[event.outcome] }}
+                  <strong class="mr-2">{{ stageLabel(event.stage, bill.chamber) }}</strong>
+                  <v-chip
+                    size="x-small"
+                    :color="statusMeta(event.outcome, bill.chamber).color"
+                    variant="tonal"
+                  >
+                    {{ outcomeLabel(event.outcome, bill.chamber) }}
                   </v-chip>
                 </div>
                 <div class="text-caption text-medium-emphasis">

@@ -4,38 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 3">
+    <list default="true" id="73f50fe3-2143-4fe3-af77-1397d1d0b294" name="Changes" comment="Phase 4">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DESIGN.md" beforeDir="false" afterPath="$PROJECT_DIR$/DESIGN.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/drizzle/meta/_journal.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/file-origin/app.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/file-origin/app.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/file-origin/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/file-origin/app.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/jobs/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/jobs/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/admin-claims.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/routes/admin-documents.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/admin-documents.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/routes/audit.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/routes/audit.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/services/audit-restore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/services/audit-restore.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/services/documents.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/services/documents.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/components/PdfViewer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/PdfViewer.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/AuditLogPanel.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/AuditLogPanel.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/components/admin/DocumentsAdminPanel.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/admin/DocumentsAdminPanel.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/router/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/AdminView.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/views/BillsView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/BillsView.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/audit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/audit.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/bills.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/bills.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/bills.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/bills.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/congress.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/congress.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/congress.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/congress.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/schemas/audit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/schemas/audit.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/schemas/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/components/bills/BillTransitionDialog.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/components/bills/BillTransitionDialog.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/bills.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/bills.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/views/BillDetailView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/views/BillDetailView.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,7 +182,7 @@
       <updated>1783430732170</updated>
       <workItem from="1783430733175" duration="8487000" />
       <workItem from="1783992727456" duration="3567000" />
-      <workItem from="1784053462944" duration="16233000" />
+      <workItem from="1784053462944" duration="17892000" />
     </task>
     <task id="LOCAL-00001" summary="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation.">
       <option name="closed" value="true" />
@@ -267,11 +240,30 @@
       <option name="project" value="LOCAL" />
       <updated>1784166029835</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Phase 4">
+      <option name="closed" value="true" />
+      <created>1784306874713</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1784306874713</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Refine OAuth implementation: support local dev setup, improve cookie handling, and update documentation." />
@@ -282,6 +274,7 @@
     <MESSAGE value="Phase 2: Complete user hydration logic for audit and claims systems." />
     <MESSAGE value="Phase 2: Integrate UserRef and claim views across APIs, admin UI, and shared wire types." />
     <MESSAGE value="Phase 3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Phase 3" />
+    <MESSAGE value="Phase 4" />
+    <option name="LAST_COMMIT_MESSAGE" value="Phase 4" />
   </component>
 </project>

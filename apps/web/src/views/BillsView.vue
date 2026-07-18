@@ -16,7 +16,7 @@ import { fetchBills } from '../api/bills';
 import { fetchTags } from '../api/tags';
 import BillSubmitDialog from '../components/bills/BillSubmitDialog.vue';
 import { useClaims } from '../composables/useClaims';
-import { CHAMBER_LABELS, formatDate, STATUS_META } from '../lib/bills';
+import { CHAMBER_LABELS, formatDate, statusMeta } from '../lib/bills';
 
 const router = useRouter();
 const { hasClaim } = useClaims();
@@ -56,7 +56,7 @@ const chamberOptions = Object.values(CHAMBERS).map((chamber) => ({
 }));
 const statusOptions = ALL_BILL_STATUSES.map((status) => ({
   value: status,
-  title: STATUS_META[status].label,
+  title: statusMeta(status).label,
 }));
 const tagOptions = computed(
   () => tags.value?.map((tag) => ({ value: tag.id, title: tag.name })) ?? [],
@@ -189,8 +189,8 @@ function onSubmitted(bill: BillDetailView) {
           <td>{{ CHAMBER_LABELS[bill.chamber] }}</td>
           <td>{{ bill.session }}</td>
           <td>
-            <v-chip :color="STATUS_META[bill.status].color" size="small" variant="tonal">
-              {{ STATUS_META[bill.status].label }}
+            <v-chip :color="statusMeta(bill.status, bill.chamber).color" size="small" variant="tonal">
+              {{ statusMeta(bill.status, bill.chamber).label }}
             </v-chip>
           </td>
           <td>

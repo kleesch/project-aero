@@ -5,7 +5,7 @@ import { computed, reactive, ref } from 'vue';
 
 import { transitionBill } from '../../api/bills';
 import { ApiError } from '../../api/client';
-import { OUTCOME_LABELS, STAGE_LABELS } from '../../lib/bills';
+import { outcomeLabel, stageLabel } from '../../lib/bills';
 
 /**
  * Declares the outcome of the bill's current stage. Options come from the
@@ -21,14 +21,14 @@ const queryClient = useQueryClient();
 const form = reactive({ toStatus: null as BillStatus | null, notes: '' });
 const errorMessage = ref<string | null>(null);
 
-const stageLabel = computed(() => {
+const currentStageLabel = computed(() => {
   const stage = STAGE_FOR_STATUS[props.bill.status];
-  return stage ? STAGE_LABELS[stage] : '';
+  return stage ? stageLabel(stage, props.bill.chamber) : '';
 });
 const options = computed(() =>
   props.bill.legalNextStatuses.map((status) => ({
     value: status,
-    title: OUTCOME_LABELS[status],
+    title: outcomeLabel(status, props.bill.chamber),
   })),
 );
 
@@ -50,7 +50,7 @@ const submit = useMutation({
 
 <template>
   <v-dialog v-model="open" max-width="520">
-    <v-card :title="`Declare ${stageLabel.toLowerCase()} outcome`">
+    <v-card :title="`Declare outcome — ${currentStageLabel}`">
       <v-card-text>
         <p class="text-body-2 text-medium-emphasis mb-3">
           {{ bill.displayId }} — {{ bill.title }}. The outcome is declared manually; recorded
