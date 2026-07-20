@@ -10,6 +10,7 @@ import { adminRostersRouter } from './routes/admin-rosters.js';
 import { adminAuditRouter, auditRouter } from './routes/audit.js';
 import { authRouter } from './routes/auth.js';
 import { billsRouter } from './routes/bills.js';
+import { businessLicenseTypesRouter } from './routes/business-license-types.js';
 import { businessesRouter } from './routes/businesses.js';
 import { documentsRouter } from './routes/documents.js';
 import { healthRouter } from './routes/health.js';
@@ -49,6 +50,7 @@ export function createApp(): express.Express {
   app.use('/api/ruling-outcomes', rulingOutcomesRouter);
   app.use('/api/users', profilesRouter);
   app.use('/api/businesses', businessesRouter);
+  app.use('/api/business-license-types', businessLicenseTypesRouter);
 
   return app;
 }

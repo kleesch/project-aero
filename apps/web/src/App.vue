@@ -91,7 +91,7 @@ onMounted(() => {
             max-height="52"
             class="flex-grow-0"
           />
-          <span v-if="!railed" class="text-h6 font-weight-bold ml-3 text-no-wrap">OSF USA</span>
+          <span v-if="!railed" class="text-h6 font-weight-bold ml-3 text-no-wrap">OSFUSA</span>
         </router-link>
         <v-divider />
       </template>

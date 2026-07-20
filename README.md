@@ -135,6 +135,24 @@ The **Congress session advances by calendar month** (July 2026 = session 84, eva
 Eastern time). A daily 00:05 ET job — plus a lazy check on any bill mutation — marks still-active
 bills from prior sessions `DIED_IN_SESSION`.
 
+## Business registration
+
+Businesses (see PROJECT.md — Business Registration) live at `/businesses`: a public directory
+(search by name, filter licensed/unlicensed) and a public detail page showing the owner,
+licenses, ownership history, and the business's court record. Two deliberately separate
+permission regimes govern mutations:
+
+- **Registration** (`business:register`) — a registrar creates the entry and assigns the owner
+  via the shared user typeahead (people who never logged in get a stub row on submit).
+- **Owner-only edits** — only the owner edits details; this sits outside the claims system, so
+  no claim (including `admin`) overrides it. **Transfers** are initiated by the owner — or an
+  admin, for recovery — and every transfer lands in the append-only
+  `business_ownership_transfers` log plus the audit trail.
+- **Licenses** (`business:license-grant`) — grant, change expiry, revoke (reason required,
+  audited). `expired` is derived from `expires_at` at read time, never stored. The **license
+  type vocabulary** is managed at `/admin` → License types (`tags:manage`); types that have
+  ever been granted can be renamed but not deleted.
+
 **Rosters** sync daily from the Congress group (2673501): admins map group ranks to chambers at
 `/admin` → Rosters (with no rules the sync classifies nobody), and `roster:resync` holders can
 force an immediate sync there. The **tag vocabulary** is managed at `/admin` → Tags

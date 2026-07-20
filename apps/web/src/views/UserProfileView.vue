@@ -3,15 +3,16 @@ import { useQuery } from '@tanstack/vue-query';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
+import { fetchOwnedBusinesses } from '../api/businesses';
 import { ApiError } from '../api/client';
 import { fetchUserCourtRecord, fetchUserProfile } from '../api/rulings';
 import CourtRecordSection from '../components/courts/CourtRecordSection.vue';
 import { formatDate } from '../lib/bills';
 
 /**
- * Minimal public profile (phase 05): identity card plus the court-record
- * section. Later phases add bills, businesses, and medals as further
- * independent sections.
+ * Public profile: identity card, the court-record section (phase 05), and
+ * the owned-businesses section (phase 06). Later phases add bills and medals
+ * as further independent sections.
  */
 const route = useRoute();
 
@@ -30,6 +31,11 @@ const {
 const { data: courtRecord, isPending: courtRecordPending } = useQuery({
   queryKey: computed(() => ['user-court-record', robloxId.value] as const),
   queryFn: () => fetchUserCourtRecord(robloxId.value),
+});
+
+const { data: ownedBusinesses } = useQuery({
+  queryKey: computed(() => ['user-businesses', robloxId.value] as const),
+  queryFn: () => fetchOwnedBusinesses(robloxId.value),
 });
 </script>
 
@@ -65,6 +71,26 @@ const { data: courtRecord, isPending: courtRecordPending } = useQuery({
           </p>
         </div>
       </v-card-text>
+    </v-card>
+
+    <v-card v-if="ownedBusinesses && ownedBusinesses.items.length > 0" class="mb-4">
+      <v-card-title>Businesses</v-card-title>
+      <v-list density="compact">
+        <v-list-item
+          v-for="business in ownedBusinesses.items"
+          :key="business.id"
+          :title="business.name"
+          :to="{ name: 'business-detail', params: { id: business.id } }"
+          prepend-icon="mdi-store"
+        >
+          <template #subtitle>
+            <template v-if="business.activeLicenses.length > 0">
+              Licensed: {{ business.activeLicenses.join(', ') }}
+            </template>
+            <template v-else>No active licenses</template>
+          </template>
+        </v-list-item>
+      </v-list>
     </v-card>
 
     <CourtRecordSection :items="courtRecord?.items" :is-pending="courtRecordPending" />

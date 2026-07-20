@@ -50,6 +50,13 @@
       "when": 1784406928341,
       "tag": "0006_judicial-records",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784583586436,
+      "tag": "0007_business-registration",
+      "breakpoints": true
     }
   ]
 }

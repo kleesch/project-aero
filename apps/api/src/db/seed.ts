@@ -37,6 +37,9 @@ import {
   billVersions,
   billVotes,
   bills,
+  businessLicenses,
+  businessLicenseTypes,
+  businessOwnershipTransfers,
   businesses,
   congressRosters,
   documents,
@@ -143,7 +146,10 @@ async function clearDemoData(): Promise<void> {
   await db.delete(rulingOutcomeLinks);
   await db.delete(rulingParties);
   await db.delete(rulings);
+  await db.delete(businessLicenses);
+  await db.delete(businessOwnershipTransfers);
   await db.delete(businesses);
+  await db.delete(businessLicenseTypes);
   await db.delete(congressRosters);
   await db.delete(tags);
   await db.delete(rulingOutcomes);
@@ -215,6 +221,68 @@ async function seed(): Promise<void> {
     ])
     .returning();
   const businessId = (name: string): number => businessRows.find((b) => b.name === name)!.id;
+
+  // --- License types & licenses ----------------------------------------------
+  const licenseTypeRows = await db
+    .insert(businessLicenseTypes)
+    .values(
+      [
+        ['Retail', 'General retail sales'],
+        ['Food Service', 'Preparation and sale of food'],
+        ['Transport', 'Commercial transport and freight'],
+        ['Financial', 'Financial services and lending'],
+      ].map(([name, description]) => ({ name: name!, description })),
+    )
+    .returning();
+  const licenseTypeId = (name: string): number =>
+    licenseTypeRows.find((t) => t.name === name)!.id;
+
+  const inOneYear = new Date();
+  inOneYear.setFullYear(inOneYear.getFullYear() + 1);
+  const lastMonth = new Date();
+  lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+  await db.insert(businessLicenses).values([
+    // Active, never expires.
+    {
+      businessId: businessId('Redwood Logistics LLC'),
+      licenseTypeId: licenseTypeId('Transport'),
+      grantedBy: ADMIN,
+    },
+    // Active with a future expiry.
+    {
+      businessId: businessId('Harbor Point Café'),
+      licenseTypeId: licenseTypeId('Food Service'),
+      grantedBy: ADMIN,
+      expiresAt: inOneYear,
+    },
+    // Revoked (renders with the audited reason).
+    {
+      businessId: businessId('Harbor Point Café'),
+      licenseTypeId: licenseTypeId('Retail'),
+      grantedBy: ADMIN,
+      status: 'revoked' as const,
+      revokedAt: lastMonth,
+      revokedBy: ADMIN,
+      revokeReason: 'Repeated health-code violations (demo).',
+    },
+    // Stored active but past expiry — derives as expired at read time.
+    {
+      businessId: businessId('Summit Tech Industries'),
+      licenseTypeId: licenseTypeId('Financial'),
+      grantedBy: ADMIN,
+      expiresAt: lastMonth,
+    },
+  ]);
+
+  // Ownership history: Summit Tech changed hands once.
+  await db.insert(businessOwnershipTransfers).values({
+    businessId: businessId('Summit Tech Industries'),
+    fromUserId: 200004,
+    toUserId: 200002,
+    initiatedBy: 200004,
+    reason: 'Sold the company (demo).',
+  });
 
   // --- Bills ----------------------------------------------------------------
   interface StageSpec {

@@ -35,6 +35,15 @@ export const AUDIT_ACTIONS = {
   RULING_OUTCOME_UPDATE: 'rulings.outcome.update',
   RULING_OUTCOME_DELETE: 'rulings.outcome.delete',
   USER_STUB_CREATE: 'users.stub.create',
+  BUSINESS_REGISTER: 'businesses.register',
+  BUSINESS_UPDATE: 'businesses.update',
+  BUSINESS_TRANSFER: 'businesses.transfer',
+  LICENSE_GRANT: 'businesses.license.grant',
+  LICENSE_UPDATE: 'businesses.license.update',
+  LICENSE_REVOKE: 'businesses.license.revoke',
+  LICENSE_TYPE_CREATE: 'businesses.license-type.create',
+  LICENSE_TYPE_UPDATE: 'businesses.license-type.update',
+  LICENSE_TYPE_DELETE: 'businesses.license-type.delete',
 } as const;
 
 export type AuditActionKey = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -60,6 +69,9 @@ export const AUDIT_ENTITIES = {
   RULING: 'ruling',
   RULING_OUTCOME: 'ruling_outcome',
   USER: 'user',
+  BUSINESS: 'business',
+  BUSINESS_LICENSE: 'business_license',
+  LICENSE_TYPE: 'license_type',
 } as const;
 
 export type AuditEntityType = (typeof AUDIT_ENTITIES)[keyof typeof AUDIT_ENTITIES];
@@ -109,4 +121,13 @@ export const AUDIT_ACTION_VISIBILITY: Record<AuditActionKey, AuditVisibility> = 
   [AUDIT_ACTIONS.RULING_OUTCOME_UPDATE]: 'sensitive',
   [AUDIT_ACTIONS.RULING_OUTCOME_DELETE]: 'sensitive',
   [AUDIT_ACTIONS.USER_STUB_CREATE]: 'sensitive',
+  [AUDIT_ACTIONS.BUSINESS_REGISTER]: 'participant',
+  [AUDIT_ACTIONS.BUSINESS_UPDATE]: 'participant',
+  [AUDIT_ACTIONS.BUSINESS_TRANSFER]: 'participant',
+  [AUDIT_ACTIONS.LICENSE_GRANT]: 'participant',
+  [AUDIT_ACTIONS.LICENSE_UPDATE]: 'participant',
+  [AUDIT_ACTIONS.LICENSE_REVOKE]: 'participant',
+  [AUDIT_ACTIONS.LICENSE_TYPE_CREATE]: 'sensitive',
+  [AUDIT_ACTIONS.LICENSE_TYPE_UPDATE]: 'sensitive',
+  [AUDIT_ACTIONS.LICENSE_TYPE_DELETE]: 'sensitive',
 } as const;

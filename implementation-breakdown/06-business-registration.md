@@ -33,7 +33,7 @@
 
 ## Acceptance Criteria
 
-- [ ] Non-registrar cannot create; owner cannot edit someone else's business; a claim-holder who isn't the owner also cannot edit (claims don't override ownership).
-- [ ] Ownership transfer preserves full history in `business_ownership_transfers` and the audit log.
-- [ ] License grant blocked without `business:license-grant`; wiring a group mapping to that claim via the admin UI enables it with no deploy.
-- [ ] Anonymous users can browse the directory and see license status.
+- [x] Non-registrar cannot create; owner cannot edit someone else's business; a claim-holder who isn't the owner also cannot edit (claims don't override ownership).
+- [x] Ownership transfer preserves full history in `business_ownership_transfers` and the audit log.
+- [x] License grant blocked without `business:license-grant`; wiring a group mapping to that claim via the admin UI enables it with no deploy.
+- [x] Anonymous users can browse the directory and see license status.

@@ -1,10 +1,11 @@
-import type { CourtRecordResponse, UserProfileView } from '@aero/shared';
-import { and, desc, eq, exists, sql } from 'drizzle-orm';
+import type { BusinessListItemView, CourtRecordResponse, UserProfileView } from '@aero/shared';
+import { and, asc, desc, eq, exists, sql } from 'drizzle-orm';
 import { Router } from 'express';
 import { z } from 'zod';
 
 import { db } from '../db/client.js';
-import { rulingParties, rulings, users } from '../db/schema.js';
+import { businesses, rulingParties, rulings, users } from '../db/schema.js';
+import { loadBusinessListItems } from '../services/businesses.js';
 import {
   loadRulingListItems,
   rulingVisibilityWhere,
@@ -12,10 +13,10 @@ import {
 } from '../services/rulings.js';
 
 /**
- * Minimal public profiles (phase 05), mounted at /api/users. A profile is
- * composed of independent sections (see DESIGN.md — Extensibility); this
- * phase ships the identity card and the court-record section. Court records
- * respect the shared ruling visibility rule.
+ * Public profiles, mounted at /api/users. A profile is composed of
+ * independent sections (see DESIGN.md — Extensibility): the identity card,
+ * the court-record section (phase 05), and the owned-businesses section
+ * (phase 06). Court records respect the shared ruling visibility rule.
  */
 export const profilesRouter = Router();
 
@@ -74,6 +75,26 @@ profilesRouter.get('/:robloxId/court-record', async (req, res, next) => {
       )
       .orderBy(desc(rulings.rulingDate), desc(rulings.id));
     res.json({ items: await loadRulingListItems(rows) } satisfies CourtRecordResponse);
+  } catch (error) {
+    next(error);
+  }
+});
+
+profilesRouter.get('/:robloxId/businesses', async (req, res, next) => {
+  try {
+    const parsed = robloxIdSchema.safeParse(req.params.robloxId);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Invalid ROBLOX user id.' });
+      return;
+    }
+    const rows = await db
+      .select()
+      .from(businesses)
+      .where(eq(businesses.ownerUserId, parsed.data))
+      .orderBy(asc(businesses.name));
+    res.json({ items: await loadBusinessListItems(rows) } satisfies {
+      items: BusinessListItemView[];
+    });
   } catch (error) {
     next(error);
   }

@@ -2,14 +2,17 @@ import {
   ALL_BILL_STAGES,
   ALL_BILL_STATUSES,
   ALL_CHAMBERS,
+  ALL_LICENSE_STATUSES,
   ALL_RULING_PARTY_SIDES,
   ALL_RULING_PARTY_TYPES,
   ALL_RULING_STATUSES,
   ALL_VOTE_POSITIONS,
   type BillStage,
   type BillStatus,
+  type BusinessStatus,
   type Chamber,
   type ChamberCode,
+  type LicenseStatus,
   type RulingPartySide,
   type RulingPartyType,
   type RulingStatus,
@@ -423,20 +426,19 @@ export const billTags = pgTable(
   (table) => [primaryKey({ columns: [table.billId, table.tagId] })],
 );
 
-// --- Businesses (minimal, ahead of phase 06) --------------------------------
+// --- Businesses (see DESIGN.md — Business) ----------------------------------
 
 /**
- * Minimal business registry per DESIGN.md — Business, landed in phase 05 so
- * ruling parties can reference real business rows (the breakdown's migration
- * coordination note). Phase 06 adds ownership transfers, licenses, and the
- * registration endpoints/UI on top of this table.
+ * Business registry per DESIGN.md — Business. The table landed in phase 05 so
+ * ruling parties could reference real business rows; phase 06 adds ownership
+ * transfers, licenses, and the registration endpoints/UI on top of it.
  */
 export const businesses = pgTable(
   'businesses',
   {
     id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
     name: text('name').notNull(),
-    status: text('status').notNull().default('active'),
+    status: text('status').$type<BusinessStatus>().notNull().default('active'),
     /** Exactly one owner (see DESIGN.md — Business). */
     ownerUserId: bigint('owner_user_id', { mode: 'number' })
       .notNull()
@@ -451,6 +453,82 @@ export const businesses = pgTable(
   (table) => [
     index('businesses_name_idx').on(table.name),
     index('businesses_owner_user_id_idx').on(table.ownerUserId),
+  ],
+);
+
+/**
+ * Append-only ownership transfer log (see DESIGN.md — Business): one row per
+ * transfer, written in the same transaction that reassigns `owner_user_id`.
+ * Never updated or deleted, so the chain of custody is always reconstructible.
+ */
+export const businessOwnershipTransfers = pgTable(
+  'business_ownership_transfers',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    businessId: integer('business_id')
+      .notNull()
+      .references(() => businesses.id),
+    fromUserId: bigint('from_user_id', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    toUserId: bigint('to_user_id', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    /** The owner themselves, or an admin acting for recovery. */
+    initiatedBy: bigint('initiated_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    reason: text('reason'),
+    transferredAt: timestamp('transferred_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('business_ownership_transfers_business_id_idx').on(table.businessId)],
+);
+
+/** License-type vocabulary — managed by `tags:manage`, granted by `business:license-grant`. */
+export const businessLicenseTypes = pgTable('business_license_types', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  name: text('name').notNull().unique(),
+  description: text('description'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const licenseStatusEnum = pgEnum(
+  'license_status',
+  ALL_LICENSE_STATUSES as [LicenseStatus, ...LicenseStatus[]],
+);
+
+/**
+ * Licenses granted to a business (`business:license-grant`). `expired` is
+ * never stored — an active license past its `expires_at` derives it at read
+ * time (shared effectiveLicenseStatus), so history stays exact with no sweep
+ * job. Revocation is a soft update preserving who/when/why.
+ */
+export const businessLicenses = pgTable(
+  'business_licenses',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    businessId: integer('business_id')
+      .notNull()
+      .references(() => businesses.id),
+    licenseTypeId: integer('license_type_id')
+      .notNull()
+      .references(() => businessLicenseTypes.id),
+    status: licenseStatusEnum('status').notNull().default('active'),
+    grantedBy: bigint('granted_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    grantedAt: timestamp('granted_at', { withTimezone: true }).notNull().defaultNow(),
+    /** Null licenses never expire. */
+    expiresAt: timestamp('expires_at', { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    revokedBy: bigint('revoked_by', { mode: 'number' }).references(() => users.robloxUserId),
+    revokeReason: text('revoke_reason'),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('business_licenses_business_id_idx').on(table.businessId),
+    index('business_licenses_status_idx').on(table.status),
   ],
 );
 

@@ -10,7 +10,6 @@ import {
   rulingModerationSchema,
   rulingSubmitSchema,
   type PartyLookupResponse,
-  type PartyLookupUser,
   type RulingListResponse,
   type RulingStatus,
 } from '@aero/shared';
@@ -27,7 +26,6 @@ import {
   rulings,
   users,
 } from '../db/schema.js';
-import { findRobloxUserById, findRobloxUserByUsername } from '../roblox/users.js';
 import { requireClaim } from '../middleware/claims.js';
 import { audit, auditContext } from '../services/audit.js';
 import { validateAttachableDocument } from '../services/documents.js';
@@ -42,6 +40,7 @@ import {
   validateRulingParties,
   viewerSeesNonActiveRulings,
 } from '../services/rulings.js';
+import { searchUsers, USER_LOOKUP_LIMIT } from '../services/user-lookup.js';
 import { isUniqueViolation, parseBody, parseIdParam } from './helpers.js';
 
 /**
@@ -71,13 +70,12 @@ async function loadVisibleRuling(req: Request, res: Response) {
 
 // --- Party lookup -----------------------------------------------------------
 
-const LOOKUP_LIMIT = 10;
-
 /**
- * Typeahead for the ruling entry form: platform users first, then a ROBLOX
- * fetch for ids/usernames we have never seen — which creates a stub users
- * row so the party can be referenced by foreign key. Gated `court:submit`
- * because it can create rows and calls the ROBLOX API.
+ * Typeahead for the ruling entry form: the shared user lookup (platform users
+ * first, ROBLOX fallback) plus businesses and the fixed government entity.
+ * ROBLOX-only hits get a stub users row so the party can be referenced by
+ * foreign key. Gated `court:submit` because it can create rows and calls the
+ * ROBLOX API.
  */
 rulingsRouter.get(
   '/party-lookup',
@@ -92,49 +90,9 @@ rulingsRouter.get(
       const q = query.data.q;
       const pattern = `%${escapeLike(q)}%`;
 
-      const toHit = (row: {
-        robloxUserId: number;
-        username: string | null;
-        displayName: string | null;
-        lastLoginAt: Date | null;
-      }): PartyLookupUser => ({
-        robloxUserId: row.robloxUserId,
-        username: row.username ?? `user #${row.robloxUserId}`,
-        displayName: row.displayName,
-        isPlatformUser: row.lastLoginAt !== null,
-      });
-
-      const userHits: PartyLookupUser[] = [];
-      if (/^\d+$/.test(q)) {
-        const id = Number(q);
-        const [local] = await db.select().from(users).where(eq(users.robloxUserId, id));
-        if (local) {
-          userHits.push(toHit(local));
-        } else {
-          const robloxUser = await findRobloxUserById(id);
-          if (robloxUser) {
-            await ensureStubUser(robloxUser, auditContext(req));
-            userHits.push({ ...robloxUser, isPlatformUser: false });
-          }
-        }
-      } else {
-        const locals = await db
-          .select()
-          .from(users)
-          .where(or(ilike(users.username, pattern), ilike(users.displayName, pattern)))
-          // Users who have actually logged in outrank stub rows.
-          .orderBy(sql`(${users.lastLoginAt} IS NOT NULL) DESC`, users.username)
-          .limit(LOOKUP_LIMIT);
-        userHits.push(...locals.map(toHit));
-        if (locals.length === 0) {
-          // Forgiving fallback: the exact-username ROBLOX lookup catches
-          // people nobody on the platform has referenced yet.
-          const robloxUser = await findRobloxUserByUsername(q);
-          if (robloxUser) {
-            await ensureStubUser(robloxUser, auditContext(req));
-            userHits.push({ ...robloxUser, isPlatformUser: false });
-          }
-        }
+      const { hits: userHits, robloxOnly } = await searchUsers(q);
+      for (const robloxUser of robloxOnly) {
+        await ensureStubUser(robloxUser, auditContext(req));
       }
 
       const businessHits = await db
@@ -142,7 +100,7 @@ rulingsRouter.get(
         .from(businesses)
         .where(ilike(businesses.name, pattern))
         .orderBy(businesses.name)
-        .limit(LOOKUP_LIMIT);
+        .limit(USER_LOOKUP_LIMIT);
 
       res.json({
         users: userHits,
