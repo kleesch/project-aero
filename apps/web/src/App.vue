@@ -86,7 +86,7 @@ onMounted(() => {
         >
           <v-img
             src="/logo.png"
-            alt="OSF USA"
+            alt="OSFUSA"
             :width="railed ? 40 : 44"
             max-height="52"
             class="flex-grow-0"

@@ -169,6 +169,23 @@ After editing `apps/api/src/db/schema.ts`, generate a new migration with:
 npm run db:generate --workspace @aero/api
 ```
 
+### Demo data
+
+To populate the public pages with realistic sample content — bills across every
+pipeline status (with versioned PDFs, per-member votes, and tags), court rulings
+(including an appeal and an expunged record), businesses, and Congress rosters —
+run the dev-only seeder against a running stack:
+
+```sh
+docker compose up -d               # stack must be up (Postgres + MinIO)
+npm run db:seed --workspace @aero/api
+```
+
+It reuses the real upload pipeline, so every seeded PDF is a genuine object in
+MinIO that renders in the sandboxed viewer. It is re-runnable (demo rows are
+cleared first) and refuses to run when `NODE_ENV=production`. This is **not** a
+migration — it never runs on boot.
+
 ## Configuration & secrets
 
 All configuration flows through environment variables, validated at startup by the zod schema in

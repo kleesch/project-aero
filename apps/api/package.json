@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "TEST_DATABASE_URL=\"${TEST_DATABASE_URL:-postgresql://aero:aero_dev_password@localhost:5432/aero_test}\" vitest run src/integration",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "@aero/shared": "0.1.0",
