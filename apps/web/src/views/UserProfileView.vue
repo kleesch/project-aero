@@ -5,9 +5,12 @@ import { useRoute } from 'vue-router';
 
 import { fetchOwnedBusinesses } from '../api/businesses';
 import { ApiError } from '../api/client';
+import { fetchIssuedExecutiveOrders } from '../api/executiveOrders';
 import { fetchUserCourtRecord, fetchUserProfile } from '../api/rulings';
 import CourtRecordSection from '../components/courts/CourtRecordSection.vue';
+import { formatEoNumber } from '@aero/shared';
 import { formatDate } from '../lib/bills';
+import { EO_STATUS_META } from '../lib/executiveOrders';
 
 /**
  * Public profile: identity card, the court-record section (phase 05), and
@@ -36,6 +39,11 @@ const { data: courtRecord, isPending: courtRecordPending } = useQuery({
 const { data: ownedBusinesses } = useQuery({
   queryKey: computed(() => ['user-businesses', robloxId.value] as const),
   queryFn: () => fetchOwnedBusinesses(robloxId.value),
+});
+
+const { data: issuedOrders } = useQuery({
+  queryKey: computed(() => ['user-executive-orders', robloxId.value] as const),
+  queryFn: () => fetchIssuedExecutiveOrders(robloxId.value),
 });
 </script>
 
@@ -88,6 +96,25 @@ const { data: ownedBusinesses } = useQuery({
               Licensed: {{ business.activeLicenses.join(', ') }}
             </template>
             <template v-else>No active licenses</template>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-card>
+
+    <v-card v-if="issuedOrders && issuedOrders.items.length > 0" class="mb-4">
+      <v-card-title>Executive orders issued</v-card-title>
+      <v-list density="compact">
+        <v-list-item
+          v-for="order in issuedOrders.items"
+          :key="order.id"
+          :title="`${formatEoNumber(order.eoNumber)} — ${order.title}`"
+          :to="{ name: 'executive-order-detail', params: { eoNumber: order.eoNumber } }"
+          prepend-icon="mdi-file-sign"
+        >
+          <template #append>
+            <v-chip :color="EO_STATUS_META[order.status].color" size="x-small" variant="tonal">
+              {{ EO_STATUS_META[order.status].label }}
+            </v-chip>
           </template>
         </v-list-item>
       </v-list>

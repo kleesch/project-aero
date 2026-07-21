@@ -13,6 +13,7 @@ import { billsRouter } from './routes/bills.js';
 import { businessLicenseTypesRouter } from './routes/business-license-types.js';
 import { businessesRouter } from './routes/businesses.js';
 import { documentsRouter } from './routes/documents.js';
+import { executiveOrdersRouter } from './routes/executive-orders.js';
 import { healthRouter } from './routes/health.js';
 import { meRouter } from './routes/me.js';
 import { profilesRouter } from './routes/profiles.js';
@@ -51,6 +52,7 @@ export function createApp(): express.Express {
   app.use('/api/users', profilesRouter);
   app.use('/api/businesses', businessesRouter);
   app.use('/api/business-license-types', businessLicenseTypesRouter);
+  app.use('/api/executive-orders', executiveOrdersRouter);
 
   return app;
 }

@@ -55,6 +55,7 @@ const navItems = computed(() => [
   { title: 'Bills', icon: 'mdi-file-document-multiple', to: '/bills' },
   { title: 'Courts', icon: 'mdi-gavel', to: '/courts' },
   { title: 'Businesses', icon: 'mdi-store', to: '/businesses' },
+  { title: 'Executive Orders', icon: 'mdi-file-sign', to: '/executive-orders' },
   ...(hasClaim(CLAIM_KEYS.CLAIMS_MANAGE)
     ? [{ title: 'Admin', icon: 'mdi-shield-crown', to: '/admin' }]
     : []),

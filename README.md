@@ -158,6 +158,24 @@ permission regimes govern mutations:
 force an immediate sync there. The **tag vocabulary** is managed at `/admin` → Tags
 (`tags:manage`); anyone with `bill:submit` can tag bills.
 
+## Executive Orders
+
+Executive Orders (see PROJECT.md — Executive Orders) live at `/executive-orders`: a public,
+numbered archive (`EO #12`) with search (title/number), status and date filters, and a detail page
+showing the issuing president, summary, repeal/supersede cross-links, and the order PDF in the
+sandboxed viewer. Anonymous users see everything; issuing and correcting orders is claim-gated:
+
+- **Issue** (`eo:manage`) — the number is entered (the form suggests `max + 1`; a duplicate comes
+  back as a clear 409), the president is picked via the shared user lookup, and the PDF goes
+  through the documents pipeline. Admins wire `eo:manage` to the presidential group rank via
+  `/admin` → Claims — no deploy when the presidency changes hands (`admin` does not imply it).
+- **Repeal / supersede are links, not titles** — issuing an order can declare that it repeals or
+  supersedes an earlier one; in a single transaction the target flips to `repealed`/`superseded`
+  and both detail pages cross-link each other.
+- **`expired` is derived** from a temporary order's expiry date at read time (never stored);
+  repeal/supersession win over expiry. Editing details and a reason-required status correction are
+  also `eo:manage`.
+
 ## Development commands
 
 All from the repository root:

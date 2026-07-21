@@ -1,11 +1,17 @@
-import type { BusinessListItemView, CourtRecordResponse, UserProfileView } from '@aero/shared';
+import type {
+  BusinessListItemView,
+  CourtRecordResponse,
+  ExecutiveOrderListItemView,
+  UserProfileView,
+} from '@aero/shared';
 import { and, asc, desc, eq, exists, sql } from 'drizzle-orm';
 import { Router } from 'express';
 import { z } from 'zod';
 
 import { db } from '../db/client.js';
-import { businesses, rulingParties, rulings, users } from '../db/schema.js';
+import { businesses, executiveOrders, rulingParties, rulings, users } from '../db/schema.js';
 import { loadBusinessListItems } from '../services/businesses.js';
+import { loadEoListItems } from '../services/executive-orders.js';
 import {
   loadRulingListItems,
   rulingVisibilityWhere,
@@ -94,6 +100,26 @@ profilesRouter.get('/:robloxId/businesses', async (req, res, next) => {
       .orderBy(asc(businesses.name));
     res.json({ items: await loadBusinessListItems(rows) } satisfies {
       items: BusinessListItemView[];
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+profilesRouter.get('/:robloxId/executive-orders', async (req, res, next) => {
+  try {
+    const parsed = robloxIdSchema.safeParse(req.params.robloxId);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Invalid ROBLOX user id.' });
+      return;
+    }
+    const rows = await db
+      .select()
+      .from(executiveOrders)
+      .where(eq(executiveOrders.issuedBy, parsed.data))
+      .orderBy(desc(executiveOrders.eoNumber));
+    res.json({ items: await loadEoListItems(rows) } satisfies {
+      items: ExecutiveOrderListItemView[];
     });
   } catch (error) {
     next(error);

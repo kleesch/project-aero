@@ -22,7 +22,7 @@ import {
   type BillStatus,
   type VotePosition,
 } from '@aero/shared';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { config } from '../config.js';
 import { logger } from '../logger.js';
@@ -43,6 +43,7 @@ import {
   businesses,
   congressRosters,
   documents,
+  executiveOrders,
   rulingOutcomeLinks,
   rulingOutcomes,
   rulingParties,
@@ -146,6 +147,7 @@ async function clearDemoData(): Promise<void> {
   await db.delete(rulingOutcomeLinks);
   await db.delete(rulingParties);
   await db.delete(rulings);
+  await db.delete(executiveOrders);
   await db.delete(businessLicenses);
   await db.delete(businessOwnershipTransfers);
   await db.delete(businesses);
@@ -283,6 +285,52 @@ async function seed(): Promise<void> {
     initiatedBy: 200004,
     reason: 'Sold the company (demo).',
   });
+
+  // --- Executive Orders ------------------------------------------------------
+  // PresidentBlake (200005) issues a chain that exercises every status:
+  // active, a temporary order past expiry (derives expired), and a repeal pair.
+  const PRESIDENT = 200005;
+  async function seedEo(
+    eoNumber: number,
+    title: string,
+    opts: { expiresAt?: Date; summary?: string | null } = {},
+  ): Promise<number> {
+    const docId = await seedPdf(ADMIN, `eo-${eoNumber}.pdf`, `Executive Order ${eoNumber}`);
+    const [row] = await db
+      .insert(executiveOrders)
+      .values({
+        eoNumber,
+        title,
+        summary: opts.summary ?? null,
+        issuedBy: PRESIDENT,
+        effectiveDate: '2026-05-01',
+        expiresAt: opts.expiresAt ?? null,
+        documentId: docId,
+        createdBy: ADMIN,
+      })
+      .returning();
+    if (!row) throw new Error(`EO ${eoNumber} insert failed`);
+    return row.id;
+  }
+
+  await seedEo(1, 'Establishing the Office of Digital Services', {
+    summary: 'Creates a central office to modernize federal digital infrastructure.',
+  });
+  await seedEo(2, 'Temporary Travel Advisory', {
+    expiresAt: lastMonth, // active status but past expiry → renders "expired"
+    summary: 'A time-limited advisory that has since lapsed.',
+  });
+  const eo3Id = await seedEo(3, 'Federal Data Standards', {
+    summary: 'Sets baseline data-handling standards across agencies.',
+  });
+  const eo4Id = await seedEo(4, 'Repealing the Federal Data Standards Order', {
+    summary: 'Rescinds EO #03 in full.',
+  });
+  // EO #04 repeals EO #03: flip the target and set the cross-link.
+  await db
+    .update(executiveOrders)
+    .set({ status: 'repealed', repealedByEoId: eo4Id })
+    .where(eq(executiveOrders.id, eo3Id));
 
   // --- Bills ----------------------------------------------------------------
   interface StageSpec {

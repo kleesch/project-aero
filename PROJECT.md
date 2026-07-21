@@ -101,6 +101,14 @@ Each business has exactly one **owner**: the user who creates the business entry
 
 Licenses should be grantable by users with a claim to be determined at a later date.
 
+### Executive Orders
+
+The platform should archive Executive Orders issued by Presidents, replacing the existing external Notion/Google-Drive archive (which must be importable):
+
+1. Each order has a platform-wide sequential number (`EO #12`), a title, an effective date, the issuing President (a linked user), a PDF via the standard document pipeline, and an optional summary.
+2. Orders carry a status: **active**, **repealed**, **expired** (temporary orders lapse on an expiry date), or **superseded**. An order may explicitly repeal or supersede an earlier order, and the two records should cross-reference each other.
+3. Issuing and correcting orders is gated behind a claim intended for the presidential rank; anyone may browse the archive and read the PDFs.
+
 ### User Records (Future Scope)
 
 User records — employment history, medals/honors, and citizenship dates — are currently scattered across other services. The eventual goal is to move them into this platform, with optional backfill from the existing services. These are **not** part of the initial build, but the data model and permissioning should be designed with them in mind:

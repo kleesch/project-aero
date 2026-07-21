@@ -44,6 +44,9 @@ export const AUDIT_ACTIONS = {
   LICENSE_TYPE_CREATE: 'businesses.license-type.create',
   LICENSE_TYPE_UPDATE: 'businesses.license-type.update',
   LICENSE_TYPE_DELETE: 'businesses.license-type.delete',
+  EO_ISSUE: 'eo.issue',
+  EO_UPDATE: 'eo.update',
+  EO_STATUS_CHANGE: 'eo.status-change',
 } as const;
 
 export type AuditActionKey = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -72,6 +75,7 @@ export const AUDIT_ENTITIES = {
   BUSINESS: 'business',
   BUSINESS_LICENSE: 'business_license',
   LICENSE_TYPE: 'license_type',
+  EXECUTIVE_ORDER: 'executive_order',
 } as const;
 
 export type AuditEntityType = (typeof AUDIT_ENTITIES)[keyof typeof AUDIT_ENTITIES];
@@ -130,4 +134,7 @@ export const AUDIT_ACTION_VISIBILITY: Record<AuditActionKey, AuditVisibility> = 
   [AUDIT_ACTIONS.LICENSE_TYPE_CREATE]: 'sensitive',
   [AUDIT_ACTIONS.LICENSE_TYPE_UPDATE]: 'sensitive',
   [AUDIT_ACTIONS.LICENSE_TYPE_DELETE]: 'sensitive',
+  [AUDIT_ACTIONS.EO_ISSUE]: 'participant',
+  [AUDIT_ACTIONS.EO_UPDATE]: 'participant',
+  [AUDIT_ACTIONS.EO_STATUS_CHANGE]: 'participant',
 } as const;

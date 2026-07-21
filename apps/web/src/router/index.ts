@@ -31,6 +31,16 @@ export const router = createRouter({
       name: 'business-detail',
       component: () => import('../views/BusinessDetailView.vue'),
     },
+    {
+      path: '/executive-orders',
+      name: 'executive-orders',
+      component: () => import('../views/ExecutiveOrdersView.vue'),
+    },
+    {
+      path: '/executive-orders/:eoNumber',
+      name: 'executive-order-detail',
+      component: () => import('../views/ExecutiveOrderDetailView.vue'),
+    },
     { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue') },
   ],
 });

@@ -17,4 +17,5 @@ export * from './documents.js';
 export * from './bills.js';
 export * from './businesses.js';
 export * from './courts.js';
+export * from './executive-orders.js';
 export * from './rosters.js';

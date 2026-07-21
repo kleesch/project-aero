@@ -25,9 +25,16 @@ export function parseIdParam(raw: string | string[] | undefined, res: Response):
   return result.data;
 }
 
-/** True for the Postgres unique-violation error code. */
+/**
+ * True for the Postgres unique-violation error code (23505). Drizzle wraps
+ * query errors (DrizzleQueryError) with the original pg error on `.cause`, so
+ * we walk the cause chain rather than only checking the top-level code.
+ */
 export function isUniqueViolation(error: unknown): boolean {
-  return (
-    typeof error === 'object' && error !== null && (error as { code?: string }).code === '23505'
-  );
+  for (let current = error; current != null; current = (current as { cause?: unknown }).cause) {
+    if (typeof current === 'object' && (current as { code?: string }).code === '23505') {
+      return true;
+    }
+  }
+  return false;
 }

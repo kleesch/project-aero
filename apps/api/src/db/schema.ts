@@ -2,6 +2,7 @@ import {
   ALL_BILL_STAGES,
   ALL_BILL_STATUSES,
   ALL_CHAMBERS,
+  ALL_EO_STATUSES,
   ALL_LICENSE_STATUSES,
   ALL_RULING_PARTY_SIDES,
   ALL_RULING_PARTY_TYPES,
@@ -12,6 +13,7 @@ import {
   type BusinessStatus,
   type Chamber,
   type ChamberCode,
+  type EoStatus,
   type LicenseStatus,
   type RulingPartySide,
   type RulingPartyType,
@@ -665,4 +667,58 @@ export const appealOutcomeLinks = pgTable(
       .references(() => rulingOutcomes.id),
   },
   (table) => [primaryKey({ columns: [table.appealId, table.outcomeId] })],
+);
+
+// --- Executive Orders (see PROJECT.md — Executive Orders) -------------------
+
+export const eoStatusEnum = pgEnum('eo_status', ALL_EO_STATUSES as [EoStatus, ...EoStatus[]]);
+
+/**
+ * Executive Orders: a numbered, platform-wide public archive. `eo_number` is
+ * entered (form suggests max+1) with a unique constraint as the backstop; the
+ * display id (`EO #12`) is derived. `expired` is never stored — an active
+ * order past `expires_at` derives it at read time (shared effectiveEoStatus).
+ *
+ * Repeal/supersession are links, not naming conventions: when a new order
+ * repeals an earlier one, the earlier row's status flips to `repealed` and its
+ * `repealed_by_eo_id` points at the new order (self-FK), so both detail pages
+ * cross-link. `superseded_by_eo_id` works identically for revisions.
+ */
+export const executiveOrders = pgTable(
+  'executive_orders',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    eoNumber: integer('eo_number').notNull(),
+    title: text('title').notNull(),
+    summary: text('summary'),
+    status: eoStatusEnum('status').notNull().default('active'),
+    /** The issuing President (stub row if they never logged in). */
+    issuedBy: bigint('issued_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    /** Calendar date the order took effect. */
+    effectiveDate: date('effective_date').notNull(),
+    /** Temporary orders lapse at this instant; null orders never expire. */
+    expiresAt: timestamp('expires_at', { withTimezone: true }),
+    documentId: uuid('document_id')
+      .notNull()
+      .references(() => documents.id),
+    /** Set on this (earlier) order when a later order repeals it. */
+    repealedByEoId: integer('repealed_by_eo_id').references((): AnyPgColumn => executiveOrders.id),
+    supersededByEoId: integer('superseded_by_eo_id').references(
+      (): AnyPgColumn => executiveOrders.id,
+    ),
+    /** The `eo:manage` holder who filed the order. */
+    createdBy: bigint('created_by', { mode: 'number' })
+      .notNull()
+      .references(() => users.robloxUserId),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('executive_orders_eo_number_unique').on(table.eoNumber),
+    index('executive_orders_status_idx').on(table.status),
+    index('executive_orders_issued_by_idx').on(table.issuedBy),
+    index('executive_orders_effective_date_idx').on(table.effectiveDate),
+  ],
 );

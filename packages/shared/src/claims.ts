@@ -18,6 +18,7 @@ export const CLAIM_KEYS = {
   COURT_PARDON: 'court:pardon',
   BUSINESS_REGISTER: 'business:register',
   BUSINESS_LICENSE_GRANT: 'business:license-grant',
+  EO_MANAGE: 'eo:manage',
   TAGS_MANAGE: 'tags:manage',
   ROSTER_RESYNC: 'roster:resync',
   CLAIMS_MANAGE: 'claims:manage',

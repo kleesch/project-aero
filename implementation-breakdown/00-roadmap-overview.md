@@ -17,6 +17,8 @@ This folder breaks the [DESIGN.md](../DESIGN.md) architecture into sequential, i
         │                    │    06 can run parallel to 04/05)
 06 Business Registration ────┘
         │
+10 Executive Orders          (depends on 03; can run parallel to 07)
+        │
 07 Public API & API Keys
         │
 08 Deployment & Operations
@@ -35,6 +37,7 @@ This folder breaks the [DESIGN.md](../DESIGN.md) architecture into sequential, i
 | 07    | [Public API & API Keys](07-public-api-and-api-keys.md)       | Versioned read-only external API, hashed API keys, rate limiting                                                        | 04, 05, 06 |
 | 08    | [Deployment & Operations](08-deployment-and-operations.md)   | Production compose, reverse proxy + TLS, managed Postgres + R2 wiring, backups, README deploy docs                      | 07         |
 | 09    | [Future: User Records](09-future-user-records.md)            | Employment history, medals, citizenship passthrough — design notes only, not scheduled                                  | —          |
+| 10    | [Executive Orders](10-executive-orders.md)                   | Numbered EO archive with PDFs, presidents, repeal chains, derived expiry, summaries (historical-archive migration out of scope) | 03  |
 
 ## Cross-Phase Conventions
 
